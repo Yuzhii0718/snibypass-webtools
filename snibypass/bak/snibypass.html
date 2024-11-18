@@ -1,0 +1,296 @@
+<!DOCTYPE HTML>
+<html class="no-js bg" lang="zh-cmn-Hans">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta charset="UTF-8">
+    <!--IE 8浏览器的页面渲染方式-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <!--默认使用极速内核：针对国内浏览器产商-->
+    <meta name="renderer" content="webkit">
+    <!--chrome Android 地址栏颜色-->
+    <meta name="theme-color" content="#3a3f51" />
+
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+    <title>chromium 浏览器伪造 sni 工具网页版</title>
+
+    <style type="text/css">
+        html.bg {
+            background: #EFEFEF
+        }
+
+        @media (max-width:767px) {
+            html.bg {
+                background: #EFEFEF
+            }
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1,
+        hr {
+            margin-top: 3em;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #err {
+            margin-top: 10px;
+            color: red;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        option {
+            padding: 10px;
+        }
+    </style>
+
+    <!-- 导入 jq jQuery v2.2.4  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+
+</head>
+
+<body id="body" class="fix-padding">
+
+    <div id="content" class="app-content" role="main">
+        <hr />
+        <h1>chromium 浏览器伪造 sni 工具网页版</h1>
+        <hr />
+        <div>SNI伪装列表：
+            <br />
+            <textarea id="in" rows="6" style="width: 100%;"></textarea>
+        </div>
+        <button id="fetchButton" class="btn m-b-xs btn-info btn-rounded"
+            onmousedown="$('#err, #out').html('');">抓取数据</button>
+
+        <button id="processButton" class="btn m-b-xs btn-info btn-rounded"
+            onmousedown="$('#err, #out').html('');">处理数据</button>
+
+        <div>执行结果：
+            <br />
+            <textarea id="out" rows="15" style="width: 100%;" readonly="readonly"></textarea>
+            <br />
+            <button onclick="copyResult()">复制执行结果</button>
+        </div>
+
+        <script>
+            function copyResult() {
+                var copyText = document.getElementById("out");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); // For mobile devices
+                document.execCommand("copy");
+                alert("执行结果已复制到剪贴板");
+            }
+        </script>
+
+        <div> 浏览器路径：
+            <br />
+            <select id="browserSelect" onchange="updateBrowserPath()">
+                <option value="C:\Program Files\Google\Chrome\Application\chrome.exe">Chrome</option>
+                <option value="C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe">Edge</option>
+                <option value="C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe">Brave</option>
+                <option value="custom">自定义</option>
+            </select>
+            <br />
+            <input id="browserPath" type="text" style="width: 100%;"
+                value="C:\Program Files\Google\Chrome\Application\chrome.exe" />
+            <button onclick="openBrowser()">打开浏览器</button>
+        </div>
+
+        <script>
+            function openBrowser() {
+                var browserPath = document.getElementById("browserPath").value;
+                var params = document.getElementById("out").value.trim(); // 获取执行结果作为参数
+
+                fetch('http://localhost:1126/open-browser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ browserPath: browserPath, params: params })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error(`执行错误: ${data.error}`);
+                        } else {
+                            console.log(`stdout: ${data.stdout}`);
+                            console.error(`stderr: ${data.stderr}`);
+                        }
+                    })
+                    .catch(error => console.error('请求失败:', error));
+            }
+        </script>
+
+        <script>
+            function updateBrowserPath() {
+                var select = document.getElementById("browserSelect");
+                var input = document.getElementById("browserPath");
+                if (select.value === "custom") {
+                    input.value = "";
+                    input.readOnly = false;
+                } else {
+                    input.value = select.value;
+                    input.readOnly = true;
+                }
+            }
+        </script>
+
+        <script>
+            const CealHostRulesDict = {};
+            const jsonUrl = 'https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
+            function processData(inputValue) {
+                const cealHostName = "CYFM";
+
+                try {
+                    CealHostRulesDict[cealHostName] = [];
+
+                    let cealHostRulesFragments = '';
+                    let cealHostResolverRulesFragments = '';
+                    let nullSniNum = 0;
+                    inputValue.forEach(cealHostRule => {
+                        let cealHostDomainPairs = [];
+                        const cealHostSni = cealHostRule[1] === null || !cealHostRule[1].trim() ?
+                            `${cealHostName}${CealHostRulesDict[cealHostName].length}` : cealHostRule[1].trim();
+                        const cealHostIp = cealHostRule[2] && cealHostRule[2].trim() ? cealHostRule[2].trim() : "127.0.0.1";
+
+                        cealHostRule[0].forEach(cealHostDomain => {
+                            const domainString = cealHostDomain.toString().trim();
+                            if (domainString.startsWith('^') || domainString.startsWith('#') || domainString.startsWith('$')) return;
+
+                            const cealHostDomainPair = domainString.split('^', 2);
+                            cealHostDomainPairs.push([cealHostDomainPair[0].trim(), cealHostDomainPair[1]?.trim() || '']);
+                        });
+
+                        CealHostRulesDict[cealHostName].push({ cealHostDomainPairs, cealHostSni, cealHostIp });
+                    });
+
+                    CealHostRulesDict[cealHostName].forEach(({ cealHostDomainPairs, cealHostSni, cealHostIp }) => {
+                        const cealHostSniWithoutNull = cealHostSni || `${cealHostName}${++nullSniNum}`;
+                        let isValidCealHostDomainExist = false;
+
+                        cealHostDomainPairs.forEach(([cealHostIncludeDomain, cealHostExcludeDomain]) => {
+                            if (cealHostIncludeDomain.startsWith('$')) return;
+
+                            cealHostRulesFragments += `MAP ${cealHostIncludeDomain.replace('#', '')} ${cealHostSniWithoutNull}`;
+                            if (cealHostExcludeDomain) {
+                                cealHostRulesFragments += `,EXCLUDE ${cealHostExcludeDomain}`;
+                            }
+                            cealHostRulesFragments += ',';
+                            isValidCealHostDomainExist = true;
+                        });
+
+                        if (isValidCealHostDomainExist) {
+                            cealHostResolverRulesFragments += `MAP ${cealHostSniWithoutNull} ${cealHostIp},`;
+                        }
+                    });
+
+                    const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors`;
+
+                    return cealArgs;
+
+                } catch (error) {
+                    console.error("处理过程中出错：", error);
+                    $('#err').text("处理数据时出错：" + error.message);
+                    return null;
+                }
+            }
+
+            function fetchData() {
+                $('#err').empty();
+
+                fetch(jsonUrl)
+                    .then(response => response.text())
+                    .then(data => {
+                        $('#in').val(data);
+                    })
+                    .catch(error => {
+                        console.error("加载 JSON 数据时出错：", error);
+                        $('#err').text("抓取数据失败！可能是网络问题。" + error.message);
+                    });
+            }
+
+            function processDataFromin() {
+                $('#err').empty();
+
+                try {
+                    const inputValue = JSON.parse($('#in').val());
+                    const processedData = processData(inputValue);
+                    if (processedData) {
+                        $('#out').val(processedData);
+                    }
+                } catch (error) {
+                    console.error("输入数据解析时出错：", error);
+                    $('#err').text("输入数据解析失败：" + error.message);
+                }
+            }
+
+            window.onload = function () {
+                const googleip = ["2.188.214.157", "91.107.164.5", "188.132.183.152", "49.12.230.233", "209.151.148.106", "82.118.16.109", "185.217.5.3", "190.103.177.131", "185.24.219.130"];
+                const randomIp = googleip[Math.floor(Math.random() * googleip.length)];
+                const defaultData = `[[["*google*","*youtube.com","*.ggpht.com","i.ytimg.com"],"g.cn","CYFM"],[["*github.com"],"","20.200.245.247"],[["*githubusercontent.com"],"","185.199.108.133"]]`;
+                const modifiedData = defaultData.replace('"CYFM"', `"${randomIp}"`);
+                $('#in').val(modifiedData);
+                $('#out').val(processData(JSON.parse(modifiedData)));
+            }
+
+            $('#fetchButton').on('click', fetchData);
+            $('#processButton').on('click', processDataFromin);
+        </script>
+        <hr />
+        <p>SNI规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host"
+                target="_blank">https://github.com/SpaceTimee/Cealing-Host</a><br>Windows客户端：<a
+                href="https://github.com/SpaceTimee/Sheas-Cealer"
+                target="_blank">https://github.com/SpaceTimee/Sheas-Cealer</a></p>
+        <p>本工具仅供学习交流使用，不得用于非法用途，否则后果自负。</p>
+    </div>
+</body>
+
+</html>
