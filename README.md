@@ -10,5 +10,3 @@ cd snibypass-webtools
 npm install
 node server.js
 ```
-
-open the `snibypass.html` in your browser

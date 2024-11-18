@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const basePath = './'; 
+const basePath = './';
 const configDir = path.join(basePath, 'snibypass', 'config');
 
 app.get('/list-configs', (req, res) => {
@@ -89,7 +89,21 @@ app.post('/open-browser', (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'snibypass.html'));
+});
+
 app.listen(port, () => {
-    // console.log(`服务器正在运行在 http://localhost:${port}`);
-    console.log(`服务器正在运行 Ctrl+C 停止`);
+    console.log(`服务器正在运行在 http://localhost:${port}`);
+    // console.log(`服务器正在运行`);
+    console.log(` Ctrl+C 停止`);
+});
+
+// 启动打开页面
+exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
+    if (error) {
+        console.error(`无法打开浏览器：${error.message}`);
+        return;
+    }
+    console.log(`已经打开浏览器`);
 });

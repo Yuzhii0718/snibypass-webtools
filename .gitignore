@@ -1,6 +1,9 @@
 # bak
 bak
 
+# config
+snibypass/config
+
 # Logs
 logs
 *.log
