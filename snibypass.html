@@ -44,12 +44,13 @@
         }
 
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #inputData,
+        #outputData {
+            width: 48%;
         }
 
         textarea {
@@ -91,6 +92,25 @@
         option {
             padding: 10px;
         }
+
+        #userAgreementModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #userAgreementModal .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 25%;
+        }
     </style>
 
     <!-- 导入 jq jQuery v2.2.4  -->
@@ -100,36 +120,51 @@
 
 <body id="body">
 
+    <div id="userAgreementModal">
+        <div class="modal-content">
+            <h2>用户协议</h2>
+            <p>请阅读并同意以下用户协议内容。</p>
+            <textarea id="userAgreement" rows="6" style="width: 95%;" readonly="readonly"></textarea>
+            <button id="agreeButton" disabled>同意 (3)</button>
+        </div>
+    </div>
+
     <div id="content" class="app-content" role="main">
-        <h1>chromium 浏览器伪造 sni 工具网页版</h1>
+        <h1>Chromium 浏览器伪造 SNI 工具网页版(Windows)</h1>
         <hr />
-        <div><a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
-                style="text-decoration: none;">SNI伪装列表：</a>
-            <br />
-            <textarea id="in" rows="6" style="width: 100%;" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
-        </div>
-        <button id="fetchButton">抓取数据</button>
+        <span style="color: #007bff;">输出信息: </span><a id="err">暂无</a>
+        <hr />
+        <div class="container">
+            <div id="inputData">
+                <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
+                    style="text-decoration: none;">SNI 伪装列表：</a>
+                <br />
+                <textarea id="in" rows="6" style="width: 100%;" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
+                <br />
+                <button id="fetchButton">抓取列表</button>
+                <button id="clearButton" onclick="$('#in, #out').val('')">清空数据</button>
+            </div>
 
-        <button id="processButton">处理数据</button>
-
-        <select id="configFiles"></select>
-
-        <input id="configFileName" placeholder="默认即使用时间进行命名">
-
-        <button id="readButton" onclick="readConfig()">读取数据</button>
-
-        <button id="saveButton" onclick="saveConfig()">保存数据</button>
-
-        <button id="delButton" onclick="delConfig()">删除数据</button>
-
-        <div>执行结果：
-            <br />
-            <textarea id="out" rows="6" style="width: 100%;" readonly="readonly"></textarea>
-            <br />
-            <button onclick="copyResult()">复制结果</button>
+            <div id="outputData">
+                执行结果：
+                <br />
+                <textarea id="out" rows="6" style="width: 100%;" readonly="readonly"
+                    placeholder="点击处理数据查看处理结果"></textarea>
+                <br />
+                <button id="processButton">处理列表</button>
+                <button onclick="copyResult()">复制结果</button>
+            </div>
         </div>
 
-        <div> 浏览器路径：
+        <div class="config">
+            <select id="configFiles"></select>
+            <input id="configFileName" placeholder="默认即使用时间进行命名">
+            <button id="readButton" onclick="readConfig()">读取数据</button>
+            <button id="saveButton" onclick="saveConfig()">保存数据</button>
+            <button id="delButton" onclick="delConfig()">删除数据</button>
+        </div>
+
+        <div class="browser"> 浏览器路径：
             <br />
             <select id="browserSelect" onchange="updateBrowserPath()">
                 <option value="C:\Program Files\Google\Chrome\Application\chrome.exe">Chrome</option>
@@ -144,19 +179,60 @@
         </div>
 
         <hr />
-        <p>SNI规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host"
-                target="_blank">https://github.com/SpaceTimee/Cealing-Host</a><br>Windows客户端：<a
-                href="https://github.com/SpaceTimee/Sheas-Cealer"
-                target="_blank">https://github.com/SpaceTimee/Sheas-Cealer</a></p>
-        <p>本工具仅供学习交流使用，不得用于非法用途，否则后果自负。</p>
+        <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
+            客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
+
+        <div id="lisence" style="font-weight: bold;">
+            <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;</p>
+            <p>请遵守符合本地法律要求，不得用于非法用途，否则后果自负。</p>
+        </div>
 
         <script>
+            function showUserAgreement() {
+                const modal = document.getElementById('userAgreementModal');
+                const agreeButton = document.getElementById('agreeButton');
+                let countdown = 3;
+
+                // 显示模态框
+                modal.style.display = 'block';
+
+                // 每秒更新倒计时
+                const interval = setInterval(function () {
+                    countdown--;
+                    agreeButton.textContent = `同意 (${countdown})`;
+                    if (countdown === 0) {
+                        clearInterval(interval);
+                        agreeButton.disabled = false;
+                        agreeButton.textContent = '同意';
+                    }
+                }, 1000);
+
+                // 用户点击同意按钮后关闭模态框
+                agreeButton.addEventListener('click', function () {
+                    modal.style.display = 'none';
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                showUserAgreement();
+            });
+
+            function writeToUserAgreement(text) {
+                const userAgreementTextarea = document.getElementById('userAgreement');
+                userAgreementTextarea.value = text;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const agreementText = "本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;\n请遵守符合本地法律要求，不得用于非法用途，否则后果自负。";
+                writeToUserAgreement(agreementText);
+            });
+
             function copyResult() {
                 var copyText = document.getElementById("out");
                 copyText.select();
                 copyText.setSelectionRange(0, 99999); // For mobile devices
                 document.execCommand("copy");
-                alert("执行结果已复制到剪贴板");
+                $('#err').text("执行结果已复制到剪贴板");
             }
 
             function openBrowser() {
@@ -170,7 +246,9 @@
                     },
                     body: JSON.stringify({ browserPath: browserPath, params: params })
                 })
-                    .then(response => response.json())
+                    .then(response => {
+                        response.json()
+                    })
                     .then(data => {
                         if (data.error) {
                             console.error(`执行错误: ${data.error}`);
@@ -179,10 +257,13 @@
                             console.error(`stderr: ${data.stderr}`);
                         }
                     })
-                    .catch(error => console.error('请求失败:', error));
+                    .catch(error => {
+                        console.error('请求失败:', error)
+                        $('#err').text("处理数据时出错：" + error.message);
+                    });
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
+            function fetchConfigFiles() {
                 fetch('http://localhost:1126/list-configs', {
                     method: 'GET'
                 })
@@ -200,15 +281,23 @@
                             option.textContent = file;
                             select.appendChild(option);
                         });
-                        // if (files.length > 0) {
-                        //     select.value = files[0];
-                        //     readConfig(files[0]);
-                        // }
                     })
                     .catch(error => {
                         alert(error.message);
+                        document.getElementById('err').textContent = "处理时出错：" + error.message;
                     });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchConfigFiles();
             });
+
+            function clearConfigFiles() {
+                const select = document.getElementById('configFiles');
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
+            }
 
             function readConfig(fileName) {
                 var configFile = document.getElementById("configFiles").value;
@@ -227,9 +316,11 @@
                     })
                     .then(data => {
                         document.getElementById('in').value = data;
+                        $('#err').text("读取成功");
                     })
                     .catch(error => {
                         alert(error.message);
+                        $('#err').text("读取失败: " + error.message);
                     });
             }
 
@@ -258,33 +349,49 @@
                         return response.text();
                     })
                     .then(response => {
-                        alert(response);
-                        // reload
-                        location.reload();
+                        //先清空列表
+                        clearConfigFiles();
+                        //再获取列表
+                        fetchConfigFiles();
+                        $('#err').text("保存成功");
                     })
                     .catch(error => {
                         alert(error.message);
+                        $('#err').text("保存失败: " + error.message);
                     });
             }
 
             function delConfig() {
-                const fileName = document.getElementById('configFiles').value;
-                fetch(`http://localhost:1126/del-config?fileName=${encodeURIComponent(fileName)}`, {
-                    method: 'GET'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => { throw new Error(text) });
-                        }
-                        return response.text();
-                    })
-                    .then(response => {
-                        alert(response);
-                        location.reload(); // 刷新页面以更新文件列表
-                    })
-                    .catch(error => {
-                        alert(error.message);
-                    });
+                const userConfirmed = confirm("确定要删除配置吗？");
+                if (userConfirmed) {
+                    // 执行删除操作
+                    const select = document.getElementById('configFiles');
+                    const selectedOption = select.options[select.selectedIndex];
+                    if (selectedOption) {
+                        const fileName = document.getElementById('configFiles').value;
+                        fetch(`http://localhost:1126/del-config?fileName=${encodeURIComponent(fileName)}`, {
+                            method: 'GET'
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.text().then(text => { throw new Error(text) });
+                                }
+                                return response.text();
+                            })
+                            .then(response => {
+                                $('#err').text("配置已删除");
+                                clearConfigFiles(); // 清空列表
+                                fetchConfigFiles(); // 重新获取列表
+                            })
+                            .catch(error => {
+                                alert(error.message);
+                                $('#err').text("删除时出错：" + error.message);
+                            });
+                    } else {
+                        alert("请选择要删除的配置");
+                        $('#err').text("请选择要删除的配置");
+                    }
+                }
             }
 
             function updateBrowserPath() {
@@ -365,6 +472,7 @@
                     .then(response => response.text())
                     .then(data => {
                         $('#in').val(data);
+                        $('#err').text("抓取成功");
                     })
                     .catch(error => {
                         console.error("加载 JSON 数据时出错：", error);
@@ -380,6 +488,7 @@
                     const processedData = processData(inputValue);
                     if (processedData) {
                         $('#out').val(processedData);
+                        $('#err').text("处理成功");
                     }
                 } catch (error) {
                     console.error("输入数据解析时出错：", error);
@@ -394,6 +503,7 @@
                 const modifiedData = defaultData.replace('"CYFM"', `"${randomIp}"`);
                 $('#in').val(modifiedData);
                 $('#out').val(processData(JSON.parse(modifiedData)));
+                $('#err').text("默认数据已加载");
             }
 
             $('#fetchButton').on('click', fetchData);
