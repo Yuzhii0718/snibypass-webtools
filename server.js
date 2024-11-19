@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 1126;
 
-app.use(cors()); // 允许所有来源的跨域请求
+app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -94,16 +94,17 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`服务器正在运行在 http://localhost:${port}`);
-    // console.log(`服务器正在运行`);
-    console.log(` Ctrl+C 停止`);
+    console.log(`INFO snibypass is running at http://localhost:${port}/ . Press Ctrl+C to stop.`);
 });
 
-// 启动打开页面
 exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
     if (error) {
-        console.error(`无法打开浏览器：${error.message}`);
+        console.error('ERROR Can not open browser: ${error.message}');
         return;
     }
-    console.log(`已经打开浏览器`);
+});
+
+process.on('SIGINT', () => {
+    console.log('INFO good bye!');
+    process.exit();
 });
