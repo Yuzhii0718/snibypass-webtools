@@ -1,4 +1,16 @@
 {
+  "name": "sni-bypass-webtools",
+  "version": "0.0.3",
+  "main": "server.js",
+  "scripts": {
+    "dev": "npm start"
+  },
+  "keywords": [
+    "sni-bypass",
+    "webtools"
+  ],
+  "author": "Bypasser",
+  "license": "MIT",
   "dependencies": {
     "colors-console": "^1.0.3",
     "cors": "^2.8.5",

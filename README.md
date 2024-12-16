@@ -8,7 +8,7 @@
 git clone
 cd snibypass-webtools
 npm install
-node server.js
+npm start
 ```
 
 ## Reference code
