@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
@@ -6,6 +7,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
 const port = 1126;
+const colors = require('colors-console')
 
 app.use(cors());
 app.use(express.json());
@@ -94,17 +96,17 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`INFO snibypass is running at http://localhost:${port}/ . Press Ctrl+C to stop.`);
+    console.log && console.info(colors('green', 'INFO') +"  " + `snibypass is running at http://localhost:${port}/ . Press Ctrl+C to stop.`);
 });
 
 exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
     if (error) {
-        console.error('ERROR Can not open browser: ${error.message}');
+        console.log && console.error(colors('red', 'ERROR') +"  " + 'Can not open browser: ${error.message}');
         return;
     }
 });
 
 process.on('SIGINT', () => {
-    console.log('INFO good bye!');
+    console.log && console.info(colors('green', 'INFO') +"  " + 'good bye!');
     process.exit();
 });
