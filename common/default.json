@@ -1,0 +1,26 @@
+{
+  "googleip": ["2.188.214.157", "91.107.164.5", "188.132.183.152", "49.12.230.233", "209.151.148.106", "82.118.16.109", "185.217.5.3", "190.103.177.131", "185.24.219.130"],
+  "defaultData": "[[[\"*google*\",\"*youtube.com\"],\"g.cn\",\"185.24.219.130\"],[[\"*github.com\"],\"\",\"20.200.245.247\"],[[\"*githubusercontent.com\"],\"\",\"185.199.108.133\"]]",
+  "browsers": [
+    {
+      "name": "Chrome",
+      "description": "",
+      "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    },
+    {
+      "name": "Edge",
+      "description": "由于 Windows 的原因，可能需要停止/重新启动 Edge 浏览器以应用更改",
+      "path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+    },
+    {
+      "name": "Brave",
+      "description": "",
+      "path": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+    },
+    {
+      "name": "自定义",
+      "description": "",
+      "path": "custom"
+    }
+  ]
+}
