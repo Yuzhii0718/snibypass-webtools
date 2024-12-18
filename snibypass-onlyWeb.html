@@ -1,0 +1,329 @@
+<!DOCTYPE HTML>
+<html class="no-js bg" lang="zh-cmn-Hans">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.2, maximum-scale=1" />
+    <meta charset="UTF-8">
+    <!--IE 8浏览器的页面渲染方式-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <!--默认使用极速内核：针对国内浏览器产商-->
+    <meta name="renderer" content="webkit">
+    <!--chrome Android 地址栏颜色-->
+    <meta name="theme-color" content="#3a3f51" />
+
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+
+    <link rel="icon"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAABNZJREFUWEe1l3tsVEUUxr9v7nZbSgUE5FFMQIS2bLHQBwgEGzVqBAmGtMVEEkWNqTEkvkspkKwh0C1p0IAkQvABaDRLIRqRIBpUiIqhNdiA3VJBiVGCFkEKpe3unSO33co+7r4A588753znd2fmnDlDxBkibmX6nHNB9QgFM0DcCiANggskTgikUSl8ceayY++oKa9ciqcVa46xJqTFc4cGtoJwUXBAFJuhpR2AgkK2aJlMcjqAAQA6AHlf6cA6ula2pQJiCyDH1typDbUbkE1K5DVOqjlrJyqN7kwMSp8jwkoR3geICeAtxa4VzHVbsAlHFIC0rBmmoQ4oQz/JnJrvEyoEDXpaa6c5hGsFuBtAu1KsZM7SXYn8owDM1rp6HdB70vKX7U/kHDkvAsJX+7gm1wPMAuUNldP1IukOJHUGpG19ujY7PUZe9QupBg+1F19droZ8BCCP4B4OGlLB7MpOO82wFfC3rrlL/NLhnLz8yPUAWL5yqvZm8zJ3E5gl4MG/A51zR0x+9WKkbhiAHF87DzlVnxKQ6wXohfhzY5ac6/hcBDNEsM+4dHIeSzb7Q7XDAXx1Jcxb2ngjgvdrSGv9cC2BQwBuB7HRyK1eEhvgZP1Yjn/51I0EsLR6jq6eajiM7wCmC8yFjryahv4Y4SvQ6BnMkup/bjSApWf6PFVXilZdb4oa2sWJNX9Z38MB3G5Ft1v/HwAibof2pf8I0gXKZiN3WWUUQKLA0lC0AVBj0dG+kE/82pXIPnI+0FJbRrIBgoAS5aKrqi3mXRBVZLxFE6B4PLhqC1jeZOV5SsO63HRrxs8AboNgkzGp+pnkAXYWr4BgVTDiVpY3LU4petDY3+JZrYga6wJT3cbo5AEaio8CyA/qnMWwm0bxnq9ilthYcHLcU6o1vu6tEyLlSQHIh4VT4FDh1ZG4l2VNX6a6CvKLe4juzjjX5ydvJgfQUFwLoDoi2HqWNz2XMoAIdWtdt9XYCHD4PwDxFt4CqrcBGRYtynwQgyK+X4DIsShbsguQ51n+Q7MdnNVD6KwBFwGxYreHAJTcDyX7Uv0jW3tyKcsa19oC/OQp1arvDEDgvwrghkJ+8XIQK3v7vmse8i46A0v4WLNtj6h9dV6BVATlL0Z3RN6S6VCyHUBOSgyGE9o5+CXjob3rYvmZPo91Zl4PmW+x7wk/KxiIDsc6gE9HlmvbZc0aCRkzDUgbECCwX4A9imiCUqcBnQFRBaZpLib5QIT/O3GzoK/0Muz6jASQzOGQ8VYbmFRChbkrwYPxAXYWH4RgdtytMNKg8+YDVCntGIlDzKmeFftdsKtgBHTaHwCMRMp6XCmQNTKR2dV58ryCOZO5Nb7YAN7Cp6DUlghVq526DITXBBk6AZJdmCzAaaX0gv6WPzbAjqKPQc4PUT0BYBH85hk4jO1gyNakZXTp3HkNAOcAsClkAMnzpuitDpFVoQ8d+yz4pDgT3bA6lsxgwdgGZ8YSPvxNR2/98FYYUCeXX2l0rJrh6INkEcqqmnuOtuUbTsNFyGgInEKcFT99jvTfD3PiBqsEhw17AO/MoVA9v1ntHMBnWd74gW367Zg6CzTeAzAOYs5mxZFvk92Hfrs4Z2DKGAQc3Xy0Ke4bT7YVDIShsrnoSEqP0oQAqf7Jtdr/C/g2xhww+h5pAAAAAElFTkSuQmCC" />
+
+    <link color="#222" href="/images/logo.svg" rel="mask-icon">
+
+    <title>chromium 浏览器伪造 sni 工具网页版(onlyWeb)</title>
+
+    <style type="text/css">
+        html.bg {
+            background: #EFEFEF
+        }
+
+        @media (max-width:767px) {
+            html.bg {
+                background: #EFEFEF
+            }
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        #content {
+            margin: 3em;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #inputData,
+        #outputData {
+            width: 48%;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        textarea[readonly] {
+            background-color: #f9f9f9;
+            color: #333;
+            cursor: not-allowed;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #err {
+            margin-top: 10px;
+            color: red;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        option {
+            padding: 10px;
+        }
+
+        #userAgreementModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #userAgreementModal .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 25%;
+        }
+    </style>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+
+</head>
+
+<body id="body">
+
+    <div id="userAgreementModal">
+        <div class="modal-content">
+            <h2>用户协议</h2>
+            <p>请阅读并同意以下用户协议内容。</p>
+            <textarea id="userAgreement" rows="6" style="width: 95%;" readonly="readonly"></textarea>
+            <button id="agreeButton" disabled>同意 (3)</button>
+        </div>
+    </div>
+
+    <div id="content" class="app-content" role="main">
+        <h1>Chromium 浏览器伪造 SNI 工具网页版(onlyWeb)</h1>
+        <hr />
+        <span style="color: #007bff;">输出信息: </span><a id="err">暂无</a>
+        <hr />
+        <div class="container">
+            <div id="inputData">
+                <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
+                    style="text-decoration: none;">SNI 伪装列表：</a>
+                <br />
+                <textarea id="in" rows="6" style="width: 100%;" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
+                <br />
+                <button id="fetchButton">抓取列表</button>
+                <button id="clearButton" onclick="$('#in, #out').val('')">清空数据</button>
+            </div>
+
+            <div id="outputData">
+                执行结果：
+                <br />
+                <textarea id="out" rows="6" style="width: 100%;" readonly="readonly"
+                    placeholder="点击处理数据查看处理结果"></textarea>
+                <br />
+                <button id="processButton">处理列表</button>
+                <button onclick="copyResult()">复制结果</button>
+            </div>
+        </div>
+
+        <hr />
+        <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a></p>
+        <p>Windows 客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
+
+        <div id="lisence" style="font-weight: bold;">
+            <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;</p>
+            <p>请遵守符合本地法律要求，不得用于非法用途，否则后果自负。</p>
+        </div>
+
+        <script>
+            function showUserAgreement() {
+                const modal = document.getElementById('userAgreementModal');
+                const agreeButton = document.getElementById('agreeButton');
+                let countdown = 3;
+
+                // 显示模态框
+                modal.style.display = 'block';
+
+                // 每秒更新倒计时
+                const interval = setInterval(function () {
+                    countdown--;
+                    agreeButton.textContent = `同意 (${countdown})`;
+                    if (countdown === 0) {
+                        clearInterval(interval);
+                        agreeButton.disabled = false;
+                        agreeButton.textContent = '同意';
+                    }
+                }, 1000);
+
+                // 用户点击同意按钮后关闭模态框
+                agreeButton.addEventListener('click', function () {
+                    modal.style.display = 'none';
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                showUserAgreement();
+            });
+
+            function writeToUserAgreement(text) {
+                const userAgreementTextarea = document.getElementById('userAgreement');
+                userAgreementTextarea.value = text;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const agreementText = "本工具仅供仅供抵御网络非法监听和开展网络安全研究使用；\n请遵守符合本地法律要求，不得用于非法用途，否则后果自负。";
+                writeToUserAgreement(agreementText);
+            });
+
+            function copyResult() {
+                var copyText = document.getElementById("out");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); // For mobile devices
+                document.execCommand("copy");
+                $('#err').text("执行结果已复制到剪贴板");
+            }
+
+            const CealHostRulesDict = {};
+            const jsonUrl = 'https://ghproxy.net/https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
+            function processData(inputValue) {
+                const cealHostName = "NO";
+
+                try {
+                    CealHostRulesDict[cealHostName] = [];
+
+                    let cealHostRulesFragments = '';
+                    let cealHostResolverRulesFragments = '';
+                    let nullSniNum = 0;
+                    inputValue.forEach(cealHostRule => {
+                        let cealHostDomainPairs = [];
+                        const cealHostSni = cealHostRule[1] === null || !cealHostRule[1].trim() ?
+                            `${cealHostName}${CealHostRulesDict[cealHostName].length}` : cealHostRule[1].trim();
+                        const cealHostIp = cealHostRule[2] && cealHostRule[2].trim() ? cealHostRule[2].trim() : "127.0.0.1";
+
+                        cealHostRule[0].forEach(cealHostDomain => {
+                            const domainString = cealHostDomain.toString().trim();
+                            if (domainString.startsWith('^') || domainString.startsWith('#') || domainString.startsWith('$')) return;
+
+                            const cealHostDomainPair = domainString.split('^', 2);
+                            cealHostDomainPairs.push([cealHostDomainPair[0].trim(), cealHostDomainPair[1]?.trim() || '']);
+                        });
+
+                        CealHostRulesDict[cealHostName].push({ cealHostDomainPairs, cealHostSni, cealHostIp });
+                    });
+
+                    CealHostRulesDict[cealHostName].forEach(({ cealHostDomainPairs, cealHostSni, cealHostIp }) => {
+                        const cealHostSniWithoutNull = cealHostSni || `${cealHostName}${++nullSniNum}`;
+                        let isValidCealHostDomainExist = false;
+
+                        cealHostDomainPairs.forEach(([cealHostIncludeDomain, cealHostExcludeDomain]) => {
+                            if (cealHostIncludeDomain.startsWith('$')) return;
+
+                            cealHostRulesFragments += `MAP ${cealHostIncludeDomain.replace('#', '')} ${cealHostSniWithoutNull}`;
+                            if (cealHostExcludeDomain) {
+                                cealHostRulesFragments += `,EXCLUDE ${cealHostExcludeDomain}`;
+                            }
+                            cealHostRulesFragments += ',';
+                            isValidCealHostDomainExist = true;
+                        });
+
+                        if (isValidCealHostDomainExist) {
+                            cealHostResolverRulesFragments += `MAP ${cealHostSniWithoutNull} ${cealHostIp},`;
+                        }
+                    });
+
+                    const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors`;
+
+                    return cealArgs;
+
+                } catch (error) {
+                    console.error("处理过程中出错：", error);
+                    $('#err').text("处理数据时出错：" + error.message);
+                    return null;
+                }
+            }
+
+            function fetchData() {
+                $('#err').empty();
+
+                fetch(jsonUrl)
+                    .then(response => response.text())
+                    .then(data => {
+                        $('#in').val(data);
+                        $('#err').text("抓取成功");
+                    })
+                    .catch(error => {
+                        console.error("加载 JSON 数据时出错：", error);
+                        $('#err').text("抓取数据失败！可能是网络问题。" + error.message);
+                    });
+            }
+
+            function processDataFromin() {
+                $('#err').empty();
+
+                try {
+                    const inputValue = JSON.parse($('#in').val());
+                    const processedData = processData(inputValue);
+                    if (processedData) {
+                        $('#out').val(processedData);
+                        $('#err').text("处理成功");
+                    }
+                } catch (error) {
+                    console.error("输入数据解析时出错：", error);
+                    $('#err').text("输入数据解析失败：" + error.message);
+                }
+            }
+
+            window.onload = function () {
+                const googleip = ["2.188.214.157", "91.107.164.5", "188.132.183.152", "49.12.230.233", "209.151.148.106", "82.118.16.109", "185.217.5.3", "190.103.177.131", "185.24.219.130"];
+                const randomIp = googleip[Math.floor(Math.random() * googleip.length)];
+                const defaultData = `[[["*google*","*youtube.com"],"g.cn","185.24.219.130"],[["*github.com"],"","20.200.245.247"],[["*githubusercontent.com"],"","185.199.108.133"]]`;
+                const modifiedData = defaultData.replace('"NO"', `"${randomIp}"`);
+                $('#in').val(modifiedData);
+                $('#out').val(processData(JSON.parse(modifiedData)));
+                $('#err').text("默认数据已加载");
+            }
+
+            $('#fetchButton').on('click', fetchData);
+            $('#processButton').on('click', processDataFromin);
+        </script>
+
+    </div>
+</body>
+
+</html>

@@ -1,9 +1,9 @@
 {
   "name": "sni-bypass-webtools",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "main": "server.js",
   "scripts": {
-    "dev": "npm start"
+    "dev": "node server.js"
   },
   "keywords": [
     "sni-bypass",
