@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html class="no-js bg" lang="zh-cmn-Hans">
+<html lang="zh-cn">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -21,77 +21,8 @@
     <title>chromium 浏览器伪造 sni 工具网页版</title>
 
     <style type="text/css">
-        html.bg {
-            background: #EFEFEF
-        }
-
-        @media (max-width:767px) {
-            html.bg {
-                background: #EFEFEF
-            }
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-
-        #content {
-            margin: 3em;
-        }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        #inputData,
-        #outputData {
-            width: 48%;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
         #err {
-            margin-top: 10px;
-            color: red;
-        }
-
-        select,
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        option {
-            padding: 10px;
+            color: coral;
         }
 
         #userAgreementModal {
@@ -99,8 +30,6 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
@@ -110,438 +39,173 @@
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 25%;
+        }
+
+        #lisence {
+            text-shadow: 1px 1px 1px #484848;
+        }
+
+        @media (min-width: 768px) {
+            #lisence {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                z-index: 1000;
+            }
+        }
+
+        .night-mode {
+            background-color: #121212;
+            color: #ffffff;
+            border-color: #ffffff;
         }
     </style>
 
-    <!-- 导入 jq jQuery v2.2.4  -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.js"></script>
 
 </head>
 
 <body id="body">
 
-    <div id="userAgreementModal">
-        <div class="modal-content">
-            <h2>用户协议</h2>
-            <p>请阅读并同意以下用户协议内容。</p>
-            <textarea id="userAgreement" rows="6" style="width: 95%;" readonly="readonly"></textarea>
-            <button id="agreeButton" disabled>同意 (3)</button>
+    <div class="custom-control custom-switch position-fixed" style="top: 10px; right: 10px;">
+        <input type="checkbox" class="custom-control-input" id="night-mode-toggle">
+        <label class="custom-control-label" for="night-mode-toggle" title="开/关夜间模式">🌗</label>
+        <label id="info-icon" title="关于">ℹ️</label>
+    </div>
+
+    <div class="custom-control custom-switch position-fixed" style="top: 50px; right: 20px;">
+        <div id="info-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <span class="rounded mr-2">❤️</span>
+                <strong class="mr-auto">关于</strong>
+                <small>SNI-Bypass-Webtools</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body" style="background-color: #f8f9fa;color: #121212;">
+                Version: <a id="version"></a><br>
+                Tips: <a id="tips"></a><br>
+            </div>
         </div>
     </div>
 
-    <div id="content" class="app-content" role="main">
+    <div id="userAgreementModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">用户协议</h5>
+                </div>
+                <div class="modal-body">
+                    <p>请阅读并同意以下用户协议内容。</p>
+                    <textarea id="userAgreement" class="form-control" rows="6" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button id="agreeButton" class="btn btn-primary" disabled>同意 (3)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="container mt-4">
         <h1>Chromium 浏览器伪造 SNI 工具网页版(Windows)</h1>
         <hr />
-        <span style="color: #007bff;">输出信息: </span><a id="err">暂无</a>
-        <hr />
-        <div class="container">
-            <div id="inputData">
-                <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
-                    style="text-decoration: none;" title="打开源地址">SNI 伪装列表：</a>
-                <br />
-                <textarea id="in" rows="6" style="width: 100%;" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
-                <br />
-                <button id="fetchButton">抓取列表</button>
-                <button id="clearButton" onclick="$('#in, #out').val('')">清空数据</button>
-            </div>
+        <div class="alert alert-info">
+            <span>输出信息: </span><a id="err">暂无</a>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="container mt-4">
+            <div class="row">
+                <div id="inputData" class="col-md-6">
+                    <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
+                        class="btn btn-link">SNI
+                        伪装列表：</a>
+                    <textarea id="in" class="form-control" rows="6" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
+                    <button id="fetchButton" class="btn btn-primary mt-2" onclick="fetchData()">抓取列表</button>
+                    <button id="clearButton" class="btn btn-secondary mt-2"
+                        onclick="$('#in, #out').val('')">清空数据</button>
+                </div>
 
-            <div id="outputData">
-                执行结果：
-                <br />
-                <textarea id="out" rows="6" style="width: 100%;" readonly="readonly"
-                    placeholder="点击处理数据查看处理结果"></textarea>
-                <br />
-                <button id="processButton">处理列表</button>
-                <button onclick="copyResult()">复制结果</button>
+                <div id="outputData" class="col-md-6">
+                    <p>执行结果：</p>
+                    <textarea id="out" class="form-control" rows="6" readonly placeholder="点击处理数据查看处理结果"></textarea>
+                    <button id="processButton" class="btn btn-primary mt-2" onclick="processDataFromin()">处理列表</button>
+                    <button class="btn btn-secondary mt-2" onclick="copyResult()">复制结果</button>
+                </div>
             </div>
         </div>
 
-        <div class="config">
-            <select id="configFiles"></select>
-            <input id="configFileName" placeholder="默认即使用时间进行命名">
-            <button id="readButton" onclick="readConfig()">读取数据</button>
-            <button id="saveButton" onclick="saveConfig()">保存数据</button>
-            <button id="delButton" onclick="delConfig()">删除数据</button>
-        </div>
-
-        <div class="browser"> 浏览器路径：
-            <br />
-            <select id="browserSelect" onchange="updateBrowserPath()">
-                <!-- Options will be dynamically generated here -->
-            </select>
-            <br />
-            <!-- <input id="browserPath" type="text" style="width: 100%;"
-                value="C:\Program Files\Google\Chrome\Application\chrome.exe" /> -->
-            <input id="browserPath" type="text" style="width: 100%;" onchange="updateInputPath" />
-            <button onclick="openBrowser()">打开浏览器</button>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="config">
+                        <div class="form-group">
+                            <label for="configFiles">配置文件</label>
+                            <select id="configFiles" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <input id="configFileName" class="form-control" placeholder="默认即使用时间进行命名">
+                        </div>
+                        <button id="readButton" class="btn btn-primary" onclick="readConfig()">读取数据</button>
+                        <button id="saveButton" class="btn btn-secondary" onclick="saveConfig()">保存数据</button>
+                        <button id="delButton" class="btn btn-danger" onclick="delConfig()">删除数据</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="browser">
+                        <div class="form-group">
+                            <label for="browserSelect">浏览器路径：</label>
+                            <select id="browserSelect" class="form-control" onchange="updateBrowserPath()">
+                                <!-- Options will be dynamically generated here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input id="browserPath" type="text" class="form-control" onchange="updateInputPath">
+                        </div>
+                        <button class="btn btn-primary" onclick="openBrowser()">打开浏览器</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <hr />
         <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
             客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
 
-        <div id="lisence" style="font-weight: bold;">
+        <div id="lisence">
             <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;</p>
             <p>请遵守符合本地法律要求，不得用于非法用途，否则后果自负。</p>
         </div>
-
-        <script>
-            function showUserAgreement() {
-                const modal = document.getElementById('userAgreementModal');
-                const agreeButton = document.getElementById('agreeButton');
-                let countdown = 3;
-
-                // 显示模态框
-                modal.style.display = 'block';
-
-                // 每秒更新倒计时
-                const interval = setInterval(function () {
-                    countdown--;
-                    agreeButton.textContent = `同意 (${countdown})`;
-                    if (countdown === 0) {
-                        clearInterval(interval);
-                        agreeButton.disabled = false;
-                        agreeButton.textContent = '同意';
-                    }
-                }, 1000);
-
-                // 用户点击同意按钮后关闭模态框
-                agreeButton.addEventListener('click', function () {
-                    modal.style.display = 'none';
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                showUserAgreement();
-            });
-
-            function writeToUserAgreement(text) {
-                const userAgreementTextarea = document.getElementById('userAgreement');
-                userAgreementTextarea.value = text;
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const agreementText = "本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;\n请遵守符合本地法律要求，不得用于非法用途，否则后果自负。";
-                writeToUserAgreement(agreementText);
-            });
-
-            function copyResult() {
-                var copyText = document.getElementById("out");
-                copyText.select();
-                copyText.setSelectionRange(0, 99999); // For mobile devices
-                document.execCommand("copy");
-                $('#err').text("执行结果已复制到剪贴板");
-            }
-
-            function openBrowser() {
-                var browserPath = document.getElementById("browserPath").value;
-                var params = document.getElementById("out").value.trim(); // 获取执行结果作为参数
-
-                fetch('/open-browser', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ browserPath: browserPath, params: params })
-                })
-                    .then(response => {
-                        response.json()
-                    })
-                    .then(data => {
-                        if (data.error) {
-                            console.error(`执行错误: ${data.error}`);
-                        } else {
-                            console.log(`stdout: ${data.stdout}`);
-                            console.error(`stderr: ${data.stderr}`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('请求失败')
-                        $('#err').text("浏览器已停止：" + error.message);
-                    });
-            }
-
-            function fetchConfigFiles() {
-                fetch('/list-configs', {
-                    method: 'GET'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => { throw new Error(text) });
-                        }
-                        return response.json();
-                    })
-                    .then(files => {
-                        const select = document.getElementById('configFiles');
-                        files.forEach(file => {
-                            const option = document.createElement('option');
-                            option.value = file;
-                            option.textContent = file;
-                            select.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        alert(error.message);
-                        document.getElementById('err').textContent = "处理时出错：" + error.message;
-                    });
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                fetchConfigFiles();
-            });
-
-            function clearConfigFiles() {
-                const select = document.getElementById('configFiles');
-                while (select.firstChild) {
-                    select.removeChild(select.firstChild);
-                }
-            }
-
-            function readConfig(fileName) {
-                var configFile = document.getElementById("configFiles").value;
-                fetch(`/read-config`, {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ configFile: configFile })
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => { throw new Error(text) });
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        document.getElementById('in').value = data;
-                        $('#err').text("读取成功");
-                    })
-                    .catch(error => {
-                        alert(error.message);
-                        $('#err').text("读取失败: " + error.message);
-                    });
-            }
-
-            function saveConfig() {
-                const content = document.getElementById('in').value;
-                let configFileName = document.getElementById('configFileName').value;
-                if (configFileName) {
-                    if (!configFileName.endsWith('.json')) {
-                        configFileName += '.json';
-                    }
-                    if (!configFileName.startsWith('config-')) {
-                        configFileName = 'config-' + configFileName;
-                    }
-                }
-                fetch('/save-config', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ content: content, configFileName: configFileName })
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.text().then(text => { throw new Error(text) });
-                        }
-                        return response.text();
-                    })
-                    .then(response => {
-                        //先清空列表
-                        clearConfigFiles();
-                        //再获取列表
-                        fetchConfigFiles();
-                        $('#err').text("保存成功");
-                    })
-                    .catch(error => {
-                        alert(error.message);
-                        $('#err').text("保存失败: " + error.message);
-                    });
-            }
-
-            function delConfig() {
-                const userConfirmed = confirm("确定要删除配置吗？");
-                if (userConfirmed) {
-                    // 执行删除操作
-                    const select = document.getElementById('configFiles');
-                    const selectedOption = select.options[select.selectedIndex];
-                    if (selectedOption) {
-                        const fileName = document.getElementById('configFiles').value;
-                        fetch(`/del-config?fileName=${encodeURIComponent(fileName)}`, {
-                            method: 'GET'
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    return response.text().then(text => { throw new Error(text) });
-                                }
-                                return response.text();
-                            })
-                            .then(response => {
-                                $('#err').text("配置已删除");
-                                clearConfigFiles(); // 清空列表
-                                fetchConfigFiles(); // 重新获取列表
-                            })
-                            .catch(error => {
-                                alert(error.message);
-                                $('#err').text("删除时出错：" + error.message);
-                            });
-                    } else {
-                        alert("请选择要删除的配置");
-                        $('#err').text("请选择要删除的配置");
-                    }
-                }
-            }
-
-            const CealHostRulesDict = {};
-            const jsonUrl = 'https://ghproxy.net/https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
-            function processData(inputValue) {
-                const cealHostName = "NO";
-
-                try {
-                    CealHostRulesDict[cealHostName] = [];
-
-                    let cealHostRulesFragments = '';
-                    let cealHostResolverRulesFragments = '';
-                    let nullSniNum = 0;
-                    inputValue.forEach(cealHostRule => {
-                        let cealHostDomainPairs = [];
-                        const cealHostSni = cealHostRule[1] === null || !cealHostRule[1].trim() ?
-                            `${cealHostName}${CealHostRulesDict[cealHostName].length}` : cealHostRule[1].trim();
-                        const cealHostIp = cealHostRule[2] && cealHostRule[2].trim() ? cealHostRule[2].trim() : "127.0.0.1";
-
-                        cealHostRule[0].forEach(cealHostDomain => {
-                            const domainString = cealHostDomain.toString().trim();
-                            if (domainString.startsWith('^') || domainString.startsWith('#') || domainString.startsWith('$')) return;
-
-                            const cealHostDomainPair = domainString.split('^', 2);
-                            cealHostDomainPairs.push([cealHostDomainPair[0].trim(), cealHostDomainPair[1]?.trim() || '']);
-                        });
-
-                        CealHostRulesDict[cealHostName].push({ cealHostDomainPairs, cealHostSni, cealHostIp });
-                    });
-
-                    CealHostRulesDict[cealHostName].forEach(({ cealHostDomainPairs, cealHostSni, cealHostIp }) => {
-                        const cealHostSniWithoutNull = cealHostSni || `${cealHostName}${++nullSniNum}`;
-                        let isValidCealHostDomainExist = false;
-
-                        cealHostDomainPairs.forEach(([cealHostIncludeDomain, cealHostExcludeDomain]) => {
-                            if (cealHostIncludeDomain.startsWith('$')) return;
-
-                            cealHostRulesFragments += `MAP ${cealHostIncludeDomain.replace('#', '')} ${cealHostSniWithoutNull}`;
-                            if (cealHostExcludeDomain) {
-                                cealHostRulesFragments += `,EXCLUDE ${cealHostExcludeDomain}`;
-                            }
-                            cealHostRulesFragments += ',';
-                            isValidCealHostDomainExist = true;
-                        });
-
-                        if (isValidCealHostDomainExist) {
-                            cealHostResolverRulesFragments += `MAP ${cealHostSniWithoutNull} ${cealHostIp},`;
-                        }
-                    });
-
-                    const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors`;
-
-                    return cealArgs;
-
-                } catch (error) {
-                    console.error("处理过程中出错：", error);
-                    $('#err').text("处理数据时出错：" + error.message);
-                    return null;
-                }
-            }
-
-            function fetchData() {
-                $('#err').empty();
-
-                fetch(jsonUrl)
-                    .then(response => response.text())
-                    .then(data => {
-                        $('#in').val(data);
-                        $('#err').text("抓取成功");
-                    })
-                    .catch(error => {
-                        console.error("加载 JSON 数据时出错：", error);
-                        $('#err').text("抓取数据失败！可能是网络问题。" + error.message);
-                    });
-            }
-
-            function processDataFromin() {
-                $('#err').empty();
-
-                try {
-                    const inputValue = JSON.parse($('#in').val());
-                    const processedData = processData(inputValue);
-                    if (processedData) {
-                        $('#out').val(processedData);
-                        $('#err').text("处理成功");
-                    }
-                } catch (error) {
-                    console.error("输入数据解析时出错：", error);
-                    $('#err').text("输入数据解析失败：" + error.message);
-                }
-            }
-
-            async function getDefault() {
-                try {
-                    const response = await fetch('/get-default');
-                    const data = await response.json();
-
-                    const googleip = data.googleip;
-                    const randomIp = googleip[Math.floor(Math.random() * googleip.length)];
-                    const defaultData = data.defaultData;
-                    const modifiedData = defaultData.replace('"NO"', `"${randomIp}"`);
-                    $('#in').val(modifiedData);
-                    $('#out').val(processData(JSON.parse(modifiedData)));
-                    $('#err').text("默认数据已加载");
-
-                    // 动态生成浏览器选项
-                    const browserSelect = document.getElementById('browserSelect');
-                    data.browsers.forEach(browser => {
-                        const option = document.createElement('option');
-                        option.value = browser.path;
-                        option.textContent = browser.name;
-                        if (browser.description) {
-                            option.title = browser.description;
-                        }
-                        browserSelect.appendChild(option);
-                    });
-
-                    updateInputPath();
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            }
-
-            getDefault();
-
-            function updateBrowserPath() {
-                const browserSelect = document.getElementById('browserSelect');
-                const browserPath = document.getElementById('browserPath');
-                if (browserSelect.value === "custom") {
-                    browserPath.value = "";
-                    browserPath.readOnly = false;
-                } else {
-                    browserPath.value = browserSelect.value;
-                    browserPath.readOnly = true;
-                }
-            }
-
-            function updateInputPath() {
-                const browserSelect = document.getElementById('browserSelect');
-                const browserPath = document.getElementById('browserPath');
-                if (browserSelect.options.length > 0) {
-                    browserPath.value = browserSelect.options[0].value;
-                    browserPath.readOnly = true;
-                }
-            }
-
-            $('#fetchButton').on('click', fetchData);
-            $('#processButton').on('click', processDataFromin);
-        </script>
-
     </div>
+
+    <script>
+        document.getElementById('night-mode-toggle').addEventListener('click', function () {
+            document.body.classList.toggle('night-mode');
+        });
+
+        document.getElementById('info-icon').addEventListener('click', function () {
+            $('#info-toast').toast('show');
+        });
+
+        $(document).ready(function () {
+            $('.toast').toast({ autohide: false });
+        });
+
+        fetch('/get-js')
+            .then(response => response.text())
+            .then(data => {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.text = data;
+                document.head.appendChild(script);
+            })
+            .catch(error => console.error('Error loading script:', error));
+    </script>
 </body>
 
 </html>

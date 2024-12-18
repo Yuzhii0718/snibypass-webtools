@@ -171,18 +171,21 @@ app.get('/get-default', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'snibypass.html'));
+app.get('/get-js', (req, res) => {
+    const jsPath = path.resolve(commonDir, 'all.js');
+    fs.readFile(jsPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading all.js:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        console.log && console.info('Read all.js');
+        res.send(data);
+    });
 });
 
-app.get('/get-JS', (req, res) => {
-    const filePath = path.join(commonDir, 'all.js');
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            console.error('Error sending file:', err);
-            res.status(500).send('Internal Server Error');
-        }
-    });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'snibypass.html'));
 });
 
 app.listen(port, () => {
@@ -197,6 +200,6 @@ exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
 });
 
 process.on('SIGINT', () => {
-    console.log && console.info('good bye!');
+    console.log && console.info('Good Bye!');
     process.exit();
 });
