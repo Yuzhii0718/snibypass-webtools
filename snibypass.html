@@ -70,7 +70,7 @@
 
 <body id="body">
 
-    <div class="custom-control custom-switch position-fixed" style="top: 10px; right: 10px;">
+    <div class="custom-control custom-switch position-fixed" id="fn-group" style="top: 10px; right: 10px;">
         <input type="checkbox" class="custom-control-input" id="night-mode-toggle">
         <label class="custom-control-label" for="night-mode-toggle" title="开/关夜间模式">🌗</label>
         <label id="info-icon" title="关于">ℹ️</label>
@@ -177,18 +177,17 @@
         <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
             客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
 
-        <div id="lisence">
-            <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;</p>
-            <p>请遵守符合本地法律要求，不得用于非法用途，否则后果自负。</p>
+        <div id="lisence" style="display: none;">
+            <a id="lisence-text"></a>
         </div>
     </div>
 
     <script>
-        document.getElementById('night-mode-toggle').addEventListener('click', function () {
+        $('#night-mode-toggle').click(function () {
             document.body.classList.toggle('night-mode');
         });
 
-        document.getElementById('info-icon').addEventListener('click', function () {
+        $('#info-icon').click(function () {
             $('#info-toast').toast('show');
         });
 

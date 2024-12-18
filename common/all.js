@@ -2,13 +2,14 @@ function copyResult() {
     var copyText = document.getElementById("out");
     copyText.select();
     copyText.setSelectionRange(0, 99999); // For mobile devices
-    document.execCommand("copy");
-    $('#err').text("执行结果已复制到剪贴板");
+    navigator.clipboard.writeText(copyText.value).then(function () {
+        $('#err').text("执行结果已复制到剪贴板");
+    });
 }
 
 function openBrowser() {
-    var browserPath = document.getElementById("browserPath").value;
-    var params = document.getElementById("out").value.trim(); // 获取执行结果作为参数
+    const browserPath = $('#browserPath').val();
+    const params = $('#out').val().trim(); // 获取执行结果作为参数
 
     fetch('/open-browser', {
         method: 'POST',
@@ -46,9 +47,9 @@ function fetchConfigFiles() {
             return response.json();
         })
         .then(files => {
-            const select = document.getElementById('configFiles');
+            const select = $('#configFiles')[0];
             files.forEach(file => {
-                const option = document.createElement('option');
+                const option = $('<option></option>')[0];
                 option.value = file;
                 option.textContent = file;
                 select.appendChild(option);
@@ -56,7 +57,7 @@ function fetchConfigFiles() {
         })
         .catch(error => {
             alert(error.message);
-            document.getElementById('err').textContent = "处理时出错：" + error.message;
+            $('#err').text("处理时出错：" + error.message);
         });
 }
 
@@ -68,7 +69,7 @@ function clearConfigFiles() {
 }
 
 function readConfig(fileName) {
-    var configFile = document.getElementById("configFiles").value;
+    const configFile = $('#configFiles').val();
     fetch(`/read-config`, {
         method: 'post',
         headers: {
@@ -84,7 +85,7 @@ function readConfig(fileName) {
             return response.text();
         })
         .then(data => {
-            document.getElementById('in').value = data;
+            $('#in').val(data);
             $('#err').text("读取成功");
         })
         .catch(error => {
@@ -94,8 +95,8 @@ function readConfig(fileName) {
 }
 
 function saveConfig() {
-    const content = document.getElementById('in').value;
-    let configFileName = document.getElementById('configFileName').value;
+    const content = $('#in').val();
+    let configFileName = $('#configFileName').val();
     if (configFileName) {
         if (!configFileName.endsWith('.json')) {
             configFileName += '.json';
@@ -135,10 +136,10 @@ function delConfig() {
     const userConfirmed = confirm("确定要删除配置吗？");
     if (userConfirmed) {
         // 执行删除操作
-        const select = document.getElementById('configFiles');
+        const select = $('#configFiles')[0];
         const selectedOption = select.options[select.selectedIndex];
         if (selectedOption) {
-            const fileName = document.getElementById('configFiles').value;
+            const fileName = $('#configFiles').val();
             fetch(`/del-config?fileName=${encodeURIComponent(fileName)}`, {
                 method: 'GET'
             })
@@ -258,8 +259,8 @@ function processDataFromin() {
 }
 
 function showUserAgreement() {
-    const modal = document.getElementById('userAgreementModal');
-    const agreeButton = document.getElementById('agreeButton');
+    const modal = $('#userAgreementModal')[0];
+    const agreeButton = $('#agreeButton')[0];
     let countdown = 3;
 
     modal.style.display = 'block';
@@ -279,9 +280,14 @@ function showUserAgreement() {
     });
 }
 
+function showLisence() {
+    const lisence = $('#lisence')[0];
+    lisence.style.display = 'block';
+}
+
 function writeToUserAgreement(text) {
-    const userAgreementTextarea = document.getElementById('userAgreement');
-    userAgreementTextarea.value = text;
+    $('#userAgreement').text(text);
+    $('#lisence-text').html(text.replace(/\n/g, '<br>'));
 }
 
 async function getDefault() {
@@ -305,14 +311,14 @@ async function getDefault() {
 
         // 传入信息
         const version = data.version;
-        document.getElementById('version').textContent = version;
+        $('#version').text(version);
         const agreementText = data.agreementText;
         writeToUserAgreement(agreementText);
         const tips = data.tips;
-        document.getElementById('tips').textContent = tips;
+        $('#tips').text(tips);
 
         // 动态生成浏览器选项
-        const browserSelect = document.getElementById('browserSelect');
+        const browserSelect = $('#browserSelect')[0];
         data.browsers.forEach(browser => {
             const option = document.createElement('option');
             option.value = browser.path;
@@ -330,8 +336,8 @@ async function getDefault() {
 }
 
 function updateBrowserPath() {
-    const browserSelect = document.getElementById('browserSelect');
-    const browserPath = document.getElementById('browserPath');
+    const browserSelect = $('#browserSelect')[0];
+    const browserPath = $('#browserPath')[0];
     if (browserSelect.value === "custom") {
         browserPath.value = "";
         browserPath.readOnly = false;
@@ -342,8 +348,8 @@ function updateBrowserPath() {
 }
 
 function updateInputPath() {
-    const browserSelect = document.getElementById('browserSelect');
-    const browserPath = document.getElementById('browserPath');
+    const browserSelect = $('#browserSelect')[0];
+    const browserPath = $('#browserPath')[0];
     if (browserSelect.options.length > 0) {
         browserPath.value = browserSelect.options[0].value;
         browserPath.readOnly = true;
@@ -352,6 +358,6 @@ function updateInputPath() {
 
 // 需要在页面加载完成后执行的代码
 getDefault();
-clearConfigFiles();
 fetchConfigFiles();
 showUserAgreement();
+showLisence()
