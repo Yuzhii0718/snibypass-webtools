@@ -1,4 +1,5 @@
 'use strict';
+// Import libraries
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
@@ -6,21 +7,25 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 1126;
+let port = 11216;
 const colors = require('colors-console')
 const winston = require('winston');
 require('winston-daily-rotate-file');
+const net = require('net');
 
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Define path to the static files
 const basePath = './';
 const configDir = path.join(basePath, 'config');
 const logDir = path.join(basePath, 'logs');
 const commonDir = path.join(basePath, 'common');
+const defaultConfigPath = path.join(commonDir, 'default.json');
 
+// log
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
@@ -40,6 +45,7 @@ const consoleTransport = new winston.transports.Console({
     )
 });
 
+// Override console.log, console.info, console.error, console.warn
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
@@ -67,6 +73,69 @@ console.warn = function (message) {
     logger.warn(colors('yellow', 'WARN') + "  " + message);
 };
 
+// Get a random port
+function getRandomPort(callback) {
+    const port = Math.floor(Math.random() * (65535 - 10000 + 1)) + 10000;
+    const server = net.createServer();
+    server.listen(port, () => {
+        server.once('close', () => {
+            callback(port);
+        });
+        server.close();
+    });
+    server.on('error', () => {
+        getRandomPort(callback);
+    });
+}
+
+// Read port from default.json
+fs.readFile(defaultConfigPath, 'utf8', (err, data) => {
+    if (err) {
+        console.error('Error reading default.json:', err);
+    } else {
+        try {
+            const config = JSON.parse(data);
+            if (config.port) {
+                if (config.port === 'random') {
+                    getRandomPort((randomPort) => {
+                        port = randomPort;
+                        startServer();
+                    });
+                } else {
+                    port = config.port;
+                    startServer();
+                }
+            } else {
+                startServer();
+            }
+        } catch (parseErr) {
+            console.error('Error parsing default.json:', parseErr);
+            startServer();
+        }
+    }
+});
+
+// Start server
+function startServer() {
+    app.listen(port, () => {
+        console.log && console.info(`snibypass is running at http://localhost:${port}/ . Press Ctrl+C to stop.`);
+    });
+
+    exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
+        if (error) {
+            console.log && console.error('Can not open browser: ${error.message}');
+            return;
+        }
+    });
+}
+
+// Exit process
+process.on('SIGINT', () => {
+    console.log && console.info('Good Bye!');
+    process.exit();
+});
+
+// Functions
 app.get('/list-configs', (req, res) => {
     fs.readdir(configDir, (err, files) => {
         if (err) {
@@ -186,20 +255,4 @@ app.get('/get-js', (req, res) => {
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'snibypass.html'));
-});
-
-app.listen(port, () => {
-    console.log && console.info(`snibypass is running at http://localhost:${port}/ . Press Ctrl+C to stop.`);
-});
-
-exec(`start http://localhost:${port}`, (error, stdout, stderr) => {
-    if (error) {
-        console.log && console.error('Can not open browser: ${error.message}');
-        return;
-    }
-});
-
-process.on('SIGINT', () => {
-    console.log && console.info('Good Bye!');
-    process.exit();
 });

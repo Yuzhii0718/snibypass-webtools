@@ -1,6 +1,8 @@
 {
   "version": "0.0.6",
   "date": "2024-12-18",
+  "port": "random",
+  "port_comment": "数字1000-65535之间或者random",
   "isDark": false,
   "showLisence": true,
   "showAgreement": true,

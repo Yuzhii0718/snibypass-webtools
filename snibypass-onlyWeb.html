@@ -2,7 +2,7 @@
 <html class="no-js bg" lang="zh-cmn-Hans">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.2, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.2, maximum-scale=1.0, user-scalable=no" />
     <meta charset="UTF-8">
     <!--IE 8浏览器的页面渲染方式-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
@@ -23,12 +23,6 @@
     <style type="text/css">
         html.bg {
             background: #EFEFEF
-        }
-
-        @media (max-width:767px) {
-            html.bg {
-                background: #EFEFEF
-            }
         }
 
         body {
@@ -116,7 +110,18 @@
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
+            width: 80%;
+        }
+
+        @media (max-width: 768px) {
+            html.bg {
+                background: #EFEFEF
+            }
+        }
+        @media (min-width: 768px) {
+            #userAgreementModal .modal-content {
             width: 25%;
+            }
         }
     </style>
 
@@ -167,7 +172,7 @@
         <p>Windows 客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
 
         <div id="lisence" style="font-weight: bold;">
-            <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用;</p>
+            <p>本工具仅供仅供抵御网络非法监听和开展网络安全研究使用；</p>
             <p>请遵守符合本地法律要求，不得用于非法用途，否则后果自负。</p>
         </div>
 
