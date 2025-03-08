@@ -127,6 +127,10 @@ function openBrowser() {
         .catch(error => {
             console.error('请求失败')
             $('#err').text("⚠️浏览器已停止：" + error.message);
+            // 向后端发送 /stop-browser 请求
+            fetch('/stop-browser', {
+                method: 'GET'
+            })
         });
 }
 

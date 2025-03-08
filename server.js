@@ -216,15 +216,20 @@ app.post('/open-browser', (req, res) => {
     const { browserPath, params } = req.body;
     const command = `"${browserPath}" ${params}`;
 
+    console.log && console.info('Browser opened');
+
     exec(command, (error, stdout, stderr) => {
         if (error) {
             res.json({ error: error.message });
             console.log && console.error('Can not open browser');
             return;
         }
-        console.log && console.info('Browser opened');
         res.json({ stdout: stdout, stderr: stderr });
     });
+});
+
+app.get('/stop-browser', (req, res) => {
+    console.log && console.info('Browser stopped');
 });
 
 app.get('/get-default', (req, res) => {
