@@ -35,7 +35,6 @@
         }
 
         #userAgreementModal .modal-content {
-            background-color: white;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
@@ -59,6 +58,17 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
 
+    <script>
+        fetch('/get-js')
+            .then(response => response.text())
+            .then(data => {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.text = data;
+                document.head.appendChild(script);
+            })
+            .catch(error => console.error('Error loading script:', error));
+    </script>
 </head>
 
 <body id="body">
@@ -79,9 +89,9 @@
                 <small>SNI-Bypass-Webtools</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body" style="background-color: #f8f9fa;color: #121212;">
+            <div class="toast-body">
                 <span id="ver-span">Version: <a id="version"></a><br></span>
-                <span id="tip-span">Tips: <a id="tips"></a><br></span> 
+                <span id="tip-span">Tips: <a id="tips"></a><br></span>
                 <span id="aut-span">Author: <a id="author"></a><br></span>
             </div>
         </div>
@@ -183,14 +193,16 @@
     </div>
 
     <script>
-        $('#night-mode-toggle').click(function () {
+        function toggleNightMode() {
             document.body.classList.toggle('night-mode');
             if (document.body.classList.contains('night-mode')) {
                 document.documentElement.setAttribute('data-bs-theme', 'dark');
             } else {
                 document.documentElement.removeAttribute('data-bs-theme');
             }
-        });
+        }
+
+        $('#night-mode-toggle').click(toggleNightMode);
 
         $('#info-icon').click(function () {
             $('#info-toast').toast('show');
@@ -199,16 +211,6 @@
         $(document).ready(function () {
             $('.toast').toast({ autohide: false });
         });
-
-        fetch('/get-js')
-            .then(response => response.text())
-            .then(data => {
-                const script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.text = data;
-                document.head.appendChild(script);
-            })
-            .catch(error => console.error('Error loading script:', error));
     </script>
 </body>
 

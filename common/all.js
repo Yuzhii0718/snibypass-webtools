@@ -341,7 +341,7 @@ async function getDefault() {
         // 从 json 获取配置
         const isDark = data.isDark;
         if (isDark) {
-            document.body.classList.toggle('night-mode');
+            toggleNightMode();
         }
         const showLisence = data.showLisence;
         if (showLisence) {
