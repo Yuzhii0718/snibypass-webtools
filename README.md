@@ -1,6 +1,6 @@
 # snibypass-webtools
 
- fake sni to cross greatwall
+Fake sni to cross greatwall.
 
 ## Usage
 
@@ -13,17 +13,13 @@ npm start
 
 ### onlyWeb ver
 
-the onlyWeb version is't depend on the server, you need't to install nodejs and npm
+The onlyWeb version is't depend on the server, you need't to install nodejs and npm.
 
-1. open the snibypass-onlyWeb.html in your browser
+1. Open the snibypass-onlyWeb.html in your browser.
 
-2. input config and generate params
+2. Input config and generate params.
 
-3. copy the params to your chromium browser boot command
-
-### tips
-
-Combine with SmartDNS to accelerate the speed of the connection
+3. Copy the params to your chromium browser boot command.
 
 ## Reference code
 

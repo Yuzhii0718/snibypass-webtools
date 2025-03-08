@@ -248,11 +248,18 @@ app.get('/get-js', (req, res) => {
             res.status(500).send('Internal Server Error');
             return;
         }
-        console.log && console.info('Read all.js');
+        console.log && console.info('all.js loaded');
         res.send(data);
     });
 });
 
+// Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'snibypass.html'));
+    console.log && console.info('snibypass.html loaded');
+});
+
+app.get('/onlyweb', (req, res) => {
+    res.sendFile(path.join(__dirname, 'snibypass-onlyWeb.html'));
+    console.log && console.info('snibypass-onlyWeb.html loaded');
 });

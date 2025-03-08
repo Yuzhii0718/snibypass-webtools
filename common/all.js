@@ -47,13 +47,13 @@ function processData(inputValue) {
             }
         });
 
-        const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors`;
+        const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors --disable-web-security`;
 
         return cealArgs;
 
     } catch (error) {
         console.error("处理过程中出错：", error);
-        $('#err').text("处理数据时出错：" + error.message);
+        $('#err').text("⚠️处理数据时出错：" + error.message);
         return null;
     }
 }
@@ -61,15 +61,19 @@ function processData(inputValue) {
 function fetchData() {
     $('#err').empty();
 
+    $('#err').append('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>');
+
+    $('#err').append('正在加载数据');
+
     fetch(jsonUrl)
         .then(response => response.text())
         .then(data => {
             $('#in').val(data);
-            $('#err').text("抓取成功");
+            $('#err').text("🎉抓取成功");
         })
         .catch(error => {
             console.error("加载 JSON 数据时出错：", error);
-            $('#err').text("抓取数据失败！可能是网络问题。" + error.message);
+            $('#err').text("⚠️抓取数据失败！可能是网络问题。" + error.message);
         });
 }
 
@@ -81,11 +85,11 @@ function processDataFromin() {
         const processedData = processData(inputValue);
         if (processedData) {
             $('#out').val(processedData);
-            $('#err').text("处理成功");
+            $('#err').text("🎉处理成功");
         }
     } catch (error) {
         console.error("输入数据解析时出错：", error);
-        $('#err').text("输入数据解析失败：" + error.message);
+        $('#err').text("⚠️输入数据解析失败：" + error.message);
     }
 }
 
@@ -122,7 +126,7 @@ function openBrowser() {
         })
         .catch(error => {
             console.error('请求失败')
-            $('#err').text("浏览器已停止：" + error.message);
+            $('#err').text("⚠️浏览器已停止：" + error.message);
         });
 }
 
@@ -148,7 +152,7 @@ function fetchConfigFiles() {
         })
         .catch(error => {
             alert(error.message);
-            $('#err').text("处理时出错：" + error.message);
+            $('#err').text("⚠️处理时出错：" + error.message);
         });
 }
 
@@ -177,11 +181,11 @@ function readConfig(fileName) {
         })
         .then(data => {
             $('#in').val(data);
-            $('#err').text("读取成功");
+            $('#err').text("🎉读取成功");
         })
         .catch(error => {
             alert(error.message);
-            $('#err').text("读取失败: " + error.message);
+            $('#err').text("⚠️读取失败: " + error.message);
         });
 }
 
@@ -215,11 +219,11 @@ function saveConfig() {
             clearConfigFiles();
             //再获取列表
             fetchConfigFiles();
-            $('#err').text("保存成功");
+            $('#err').text("🎉保存成功");
         })
         .catch(error => {
             alert(error.message);
-            $('#err').text("保存失败: " + error.message);
+            $('#err').text("⚠️保存失败: " + error.message);
         });
 }
 
@@ -248,7 +252,7 @@ function delConfig() {
                 })
                 .catch(error => {
                     alert(error.message);
-                    $('#err').text("删除时出错：" + error.message);
+                    $('#err').text("⚠️删除时出错：" + error.message);
                 });
         } else {
             alert("请选择要删除的配置");
@@ -260,6 +264,7 @@ function delConfig() {
 function showUserAgreement() {
     const modal = $('#userAgreementModal')[0];
     const agreeButton = $('#agreeButton')[0];
+    const disagreeButton = $('#disagreeButton')[0];
     let countdown = 3;
 
     modal.style.display = 'block';
@@ -276,6 +281,11 @@ function showUserAgreement() {
 
     agreeButton.addEventListener('click', function () {
         modal.style.display = 'none';
+    });
+
+    disagreeButton.addEventListener('click', function () {
+        window.location.href = 'about:blank';
+        window.close();
     });
 }
 
@@ -323,7 +333,7 @@ async function getDefault() {
         $('#in').val(modifiedData);
         $('#out').val(processData(JSON.parse(modifiedData)));
         $('#err').text("默认数据已加载");
-        
+
         // 从 json 获取配置
         const isDark = data.isDark;
         if (isDark) {
@@ -339,12 +349,29 @@ async function getDefault() {
         }
 
         // 传入信息
-        const version = data.version;
-        $('#version').text(version);
         const agreementText = data.agreementText;
         writeToUserAgreement(agreementText);
+
+        const version = data.version;
+        if (version) {
+            $('#version').text(version).show();
+        } else {
+            $('#ver-span').hide();
+        }
+        
         const tips = data.tips;
-        $('#tips').text(tips);
+        if (tips) {
+            $('#tips').text(tips).show();
+        } else {
+            $('#tip-span').hide();
+        }
+        
+        const author = data.author;
+        if (author) {
+            $('#author').text(author).show();
+        } else {
+            $('#aut-span').hide();
+        }
 
         // 动态生成浏览器选项
         const browserSelect = $('#browserSelect')[0];

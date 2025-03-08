@@ -2,7 +2,7 @@
 <html lang="zh-cn">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.2, maximum-scale=1, user-scalable=no" />
     <meta charset="UTF-8">
     <!--IE 8浏览器的页面渲染方式-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
@@ -53,42 +53,36 @@
                 z-index: 1000;
             }
         }
-
-        .night-mode {
-            background-color: #121212;
-            color: #ffffff;
-            border-color: #ffffff;
-        }
     </style>
 
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.css" rel="stylesheet">
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.slim.min.js"></script>
 
 </head>
 
 <body id="body">
 
     <div class="custom-control custom-switch position-fixed" id="fn-group" style="top: 10px; right: 10px;">
-        <input type="checkbox" class="custom-control-input" id="night-mode-toggle">
-        <label class="custom-control-label" for="night-mode-toggle" title="开/关夜间模式">🌗</label>
-        <label id="info-icon" title="关于">ℹ️</label>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="night-mode-toggle">
+            <label class="form-check-label" for="night-mode-toggle" title="开/关夜间模式">🌗</label>
+            <label id="info-icon" title="关于">ℹ️</label>
+        </div>
     </div>
 
-    <div class="custom-control custom-switch position-fixed" style="top: 50px; right: 20px;">
-        <div id="info-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="custom-control custom-switch position-fixed" style="top: 50px; right: 20px; z-index: 1000;">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="info-toast">
             <div class="toast-header">
-                <span class="rounded mr-2">❤️</span>
-                <strong class="mr-auto">关于</strong>
+                <span class="rounded me-2">❤️</span>
+                <strong class="me-auto">关于</strong>
                 <small>SNI-Bypass-Webtools</small>
-                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body" style="background-color: #f8f9fa;color: #121212;">
-                Version: <a id="version"></a><br>
-                Tips: <a id="tips"></a><br>
+                <span id="ver-span">Version: <a id="version"></a><br></span>
+                <span id="tip-span">Tips: <a id="tips"></a><br></span> 
+                <span id="aut-span">Author: <a id="author"></a><br></span>
             </div>
         </div>
     </div>
@@ -105,6 +99,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="agreeButton" class="btn btn-primary" disabled>同意 (3)</button>
+                    <button id="disagreeButton" class="btn btn-danger" data-dismiss="modal">不同意</button>
                 </div>
             </div>
         </div>
@@ -113,12 +108,14 @@
     <div id="content" class="container mt-4">
         <h1>Chromium 浏览器伪造 SNI 工具网页版(Windows)</h1>
         <hr />
-        <div class="alert alert-info">
-            <span>输出信息: </span><a id="err">暂无</a>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div>
+                <span>输出信息: </span><a id="err">暂无</a>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+
         <div class="container mt-4">
             <div class="row">
                 <div id="inputData" class="col-md-6">
@@ -151,6 +148,7 @@
                         <div class="form-group">
                             <input id="configFileName" class="form-control" placeholder="默认即使用时间进行命名">
                         </div>
+                        <br>
                         <button id="readButton" class="btn btn-primary" onclick="readConfig()">读取数据</button>
                         <button id="saveButton" class="btn btn-secondary" onclick="saveConfig()">保存数据</button>
                         <button id="delButton" class="btn btn-danger" onclick="delConfig()">删除数据</button>
@@ -167,6 +165,7 @@
                         <div class="form-group">
                             <input id="browserPath" type="text" class="form-control" onchange="updateInputPath">
                         </div>
+                        <br>
                         <button class="btn btn-primary" onclick="openBrowser()">打开浏览器</button>
                     </div>
                 </div>
@@ -175,7 +174,8 @@
 
         <hr />
         <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
-            客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a></p>
+            客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a><br>切换到 <a
+                href="/onlyweb">OnlyWeb</a> 版本</p>
 
         <div id="lisence" style="display: none;">
             <a id="lisence-text"></a>
@@ -185,6 +185,11 @@
     <script>
         $('#night-mode-toggle').click(function () {
             document.body.classList.toggle('night-mode');
+            if (document.body.classList.contains('night-mode')) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-bs-theme');
+            }
         });
 
         $('#info-icon').click(function () {

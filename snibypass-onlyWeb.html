@@ -111,6 +111,11 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
+            border-radius: 10px;
+        }
+
+        #disagreeButton {
+            background-color: #dc3545;
         }
 
         @media (max-width: 768px) {
@@ -137,6 +142,7 @@
             <p>请阅读并同意以下用户协议内容。</p>
             <textarea id="userAgreement" rows="6" style="width: 95%;" readonly="readonly"></textarea>
             <button id="agreeButton" disabled>同意 (3)</button>
+            <button id="disagreeButton" onclick="closeWindow()">不同意</button>
         </div>
     </div>
 
@@ -200,6 +206,11 @@
                 agreeButton.addEventListener('click', function () {
                     modal.style.display = 'none';
                 });
+            }
+
+            function closeWindow() {
+                window.location.href = 'about:blank';
+                window.close();
             }
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -272,7 +283,7 @@
                         }
                     });
 
-                    const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors`;
+                    const cealArgs = ` --host-rules="${cealHostRulesFragments.trimEnd(',')}" --host-resolver-rules="${cealHostResolverRulesFragments.trimEnd(',')}" --test-type --ignore-certificate-errors --disable-web-security`;
 
                     return cealArgs;
 
