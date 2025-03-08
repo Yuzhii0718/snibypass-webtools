@@ -246,14 +246,14 @@ app.get('/get-default', (req, res) => {
 });
 
 app.get('/get-js', (req, res) => {
-    const jsPath = path.resolve(commonDir, 'all.js');
+    const jsPath = path.resolve(commonDir, 'page.js');
     fs.readFile(jsPath, 'utf8', (err, data) => {
         if (err) {
-            console.error('Error reading all.js:', err);
+            console.error('Error reading page.js:', err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        console.log && console.info('all.js loaded');
+        console.log && console.info('page.js loaded');
         res.send(data);
     });
 });

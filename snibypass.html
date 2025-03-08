@@ -125,13 +125,14 @@
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-
         <div class="container mt-4">
             <div class="row">
                 <div id="inputData" class="col-md-6">
-                    <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
-                        class="btn btn-link">SNI
-                        伪装列表：</a>
+                    <div class="d-flex align-items-center">
+                        <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank" class="btn btn-link">SNI 伪装列表：</a>
+                        <label for="mirrorSelect" class="mb-0 ms-2">镜像</label>
+                        <select id="mirrorSelect" class="form-control ms-2" style="width: auto;" onchange="updateMirrorPath()"></select>
+                    </div>
                     <textarea id="in" class="form-control" rows="6" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
                     <button id="fetchButton" class="btn btn-primary mt-2" onclick="fetchData()">抓取列表</button>
                     <button id="clearButton" class="btn btn-secondary mt-2"
@@ -173,7 +174,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <input id="browserPath" type="text" class="form-control" onchange="updateInputPath">
+                            <input id="browserPath" type="text" class="form-control" onchange="updateInputPath()">
                         </div>
                         <br>
                         <button class="btn btn-primary" onclick="openBrowser()">打开浏览器</button>
@@ -186,7 +187,6 @@
         <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
             客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a><br>切换到 <a
                 href="/onlyweb">OnlyWeb</a> 版本</p>
-
         <div id="lisence" style="display: none;">
             <a id="lisence-text"></a>
         </div>

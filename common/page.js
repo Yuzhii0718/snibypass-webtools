@@ -1,5 +1,19 @@
 const CealHostRulesDict = {};
-const jsonUrl = 'https://ghproxy.net/https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
+const originalUrl = 'https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
+let jsonUrl = originalUrl;
+
+function updateMirrorPath() {
+    const mirrorSelect = $('#mirrorSelect')[0];
+    const mirrorUrl = mirrorSelect.value;
+    if (mirrorUrl) {
+        jsonUrl = mirrorUrl + originalUrl;
+        $('#mirrorPath').val(jsonUrl);
+        $('#err').text("🎉镜像已更新");
+    } else {
+        $('#err').text("⚠️使用默认镜像");
+    }
+    console.log("当前镜像：" + jsonUrl); // 你可以根据需要使用这个 jsonUrl
+}
 
 function processData(inputValue) {
     const cealHostName = "NO";
@@ -73,8 +87,9 @@ function fetchData() {
         })
         .catch(error => {
             console.error("加载 JSON 数据时出错：", error);
-            $('#err').text("⚠️抓取数据失败！可能是网络问题。" + error.message);
+            $('#err').text("⚠️抓取数据失败！可能是网络问题，建议更换镜像后重试。" + error.message);
         });
+    console.log("正在获取数据：" + jsonUrl)
 }
 
 function processDataFromin() {
@@ -362,14 +377,14 @@ async function getDefault() {
         } else {
             $('#ver-span').hide();
         }
-        
+
         const tips = data.tips;
         if (tips) {
             $('#tips').text(tips).show();
         } else {
             $('#tip-span').hide();
         }
-        
+
         const author = data.author;
         if (author) {
             $('#author').text(author).show();
@@ -387,6 +402,39 @@ async function getDefault() {
                 option.title = browser.description;
             }
             browserSelect.appendChild(option);
+        });
+
+        // 动态生成镜像选项
+        const mirrorSelect = $('#mirrorSelect')[0];
+        data.mirrors.forEach(mirror => {
+            const option = document.createElement('option');
+            option.value = mirror.url;
+            option.textContent = mirror.name;
+            option.dataset.index = mirror.index; // 添加index到option的data属性
+            mirrorSelect.appendChild(option);
+        });
+
+        // 设置默认选择的镜像
+        const defaultMirrorIndex = data.mirrors.findIndex(mirror => mirror.index === data.defaultMirror);
+        if (defaultMirrorIndex !== -1) {
+            mirrorSelect.selectedIndex = defaultMirrorIndex;
+        }
+
+        // 监听镜像选择变化
+        mirrorSelect.addEventListener('change', function () {
+            const selectedOption = mirrorSelect.options[mirrorSelect.selectedIndex];
+            if (selectedOption.dataset.index == 99) {
+                const customUrl = prompt("请输入自定义镜像的 URL (格式: https://example.com/):");
+                if (customUrl) {
+                    selectedOption.value = customUrl;
+                    selectedOption.textContent = `自定义 (${customUrl})`;
+                    updateMirrorPath();
+                } else {
+                    alert("自定义镜像 URL 不能为空！");
+                }
+            } else {
+                updateMirrorPath();
+            }
         });
 
         // 初始化

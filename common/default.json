@@ -1,5 +1,5 @@
 {
-  "version": "0.0.7",
+  "version": "0.0.8",
   "date": "2025-3-8",
   "author": "",
   "port": "random",
@@ -7,6 +7,7 @@
   "isDark": false,
   "showLisence": true,
   "showAgreement": true,
+  "defaultMirror": 1,
   "googleip": ["2.188.214.157", "91.107.164.5", "188.132.183.152", "49.12.230.233", "209.151.148.106", "82.118.16.109", "185.217.5.3", "190.103.177.131", "185.24.219.130"],
   "defaultData": "[[[\"*google*\",\"*youtube.com\"],\"g.cn\",\"185.24.219.130\"],[[\"*github.com\"],\"\",\"20.200.245.247\"],[[\"*githubusercontent.com\"],\"\",\"185.199.108.133\"]]",
   "agreementText": "本工具仅供仅供抵御网络非法监听和开展网络安全研究使用；\n请遵守本地法律法规要求，不得用于非法用途，否则后果自负。",
@@ -31,6 +32,63 @@
       "name": "自定义",
       "description": "使用自定义的路径",
       "path": "custom"
+    }
+  ],
+  "mirrors": [
+    { 
+      "index": 0,
+      "name": "默认",
+      "url": ""
+    },
+    { 
+      "index": 1,
+      "name": "1号节点",
+      "url": "https://ghproxy.net/"
+    },
+    {
+      "index": 2,
+      "name": "2号节点",
+      "url": "https://goppx.com/"
+    },
+    { 
+      "index": 3,
+      "name": "3号节点",
+      "url": "https://gh.llkk.cc/"
+    },
+    { 
+      "index": 4,
+      "name": "4号节点",
+      "url": "https://gitproxy.click/"
+    },
+    { 
+      "index": 5,
+      "name": "5号节点",
+      "url": "https://github.tbedu.top/"
+    },
+    { 
+      "index": 6,
+      "name": "6号节点",
+      "url": "https://github.moeyy.xyz/"
+    },
+    { 
+      "index": 7,
+      "name": "7号节点",
+      "url": "https://ghfile.geekertao.top/"
+    },
+    { 
+      "index": 8,
+      "name": "8号节点",
+      "url": "https://ghproxy.imciel.com/"
+    },
+    { 
+      "index": 9,
+      "name": "9号节点",
+      "url": "https://ghproxy.monkeyray.net/"
+    },
+    { 
+      "index": 99,
+      "name": "自定义",
+      "url": ""
     }
   ]
 }
