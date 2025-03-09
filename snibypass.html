@@ -77,7 +77,8 @@
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" role="switch" id="night-mode-toggle">
             <label class="form-check-label" for="night-mode-toggle" title="开/关夜间模式">🌗</label>
-            <label id="info-icon" title="关于">ℹ️</label>
+            <label id="info-icon" title="关于" role="button">ℹ️</label>
+            <label data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">📄</label>
         </div>
     </div>
 
@@ -129,9 +130,17 @@
             <div class="row">
                 <div id="inputData" class="col-md-6">
                     <div class="d-flex align-items-center">
-                        <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank" class="btn btn-link">SNI 伪装列表：</a>
+                        <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
+                            class="btn btn-link">SNI 伪装列表：</a>
                         <label for="mirrorSelect" class="mb-0 ms-2">镜像</label>
-                        <select id="mirrorSelect" class="form-control ms-2" style="width: auto;" onchange="updateMirrorPath()"></select>
+                        <select id="mirrorSelect" class="form-control ms-2" style="width: auto;"
+                            onchange="updateMirrorPath()"></select>
+                        <button id="mirrorButton" class="btn btn-success ms-2"
+                            onclick="getFastestMirror()">最快镜像</button>
+                        <div class="spinner-border text-success" role="status" id="mirrorSpinner"
+                            style="display: none;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                     <textarea id="in" class="form-control" rows="6" placeholder="点击抓取数据，或者手动从‘SNI伪装列表’导入数据"></textarea>
                     <button id="fetchButton" class="btn btn-primary mt-2" onclick="fetchData()">抓取列表</button>
@@ -184,12 +193,29 @@
         </div>
 
         <hr />
-        <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host" target="_blank">Cealing-Host</a><br>Windows
-            客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a><br>切换到 <a
-                href="/onlyweb">OnlyWeb</a> 版本</p>
+
         <div id="lisence" style="display: none;">
             <a id="lisence-text"></a>
         </div>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasLabel">其他</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div>
+                    Fake sni to cross greatwall.
+                    <hr>
+                    <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host"
+                            target="_blank">Cealing-Host</a><br>Windows
+                        客户端：<a href="https://github.com/SpaceTimee/Sheas-Cealer" target="_blank">Sheas-Cealer</a><br>切换到
+                        <a href="/onlyweb">OnlyWeb</a> 版本</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     </div>
 
     <script>

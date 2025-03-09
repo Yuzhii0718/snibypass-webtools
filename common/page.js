@@ -12,7 +12,52 @@ function updateMirrorPath() {
     } else {
         $('#err').text("⚠️使用默认镜像");
     }
-    console.log("当前镜像：" + jsonUrl); // 你可以根据需要使用这个 jsonUrl
+    console.log("当前镜像：" + jsonUrl);
+}
+
+function getFastestMirror() {
+    const select = document.getElementById('mirrorSelect');
+    const options = Array.from(select.options);
+    const urls = options.map(option => option.value);
+    const domains = urls.map(url => {
+        try {
+            return url ? new URL(url).hostname : 'raw.githubusercontent.com';
+        } catch (e) {
+            console.error(`Invalid URL: ${url}`);
+            return 'raw.githubusercontent.com';
+        }
+    }).filter(domain => domain !== null);
+
+    document.getElementById('mirrorSpinner').style.display = 'inline-block';
+
+    fetch('/ping-mirrors', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ domains })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('mirrorSpinner').style.display = 'none';
+        const fastestDomain = data.fastestDomain;
+        const fastestOption = options.find(option => {
+            try {
+                return new URL(option.value).hostname === fastestDomain;
+            } catch (e) {
+                return false;
+            }
+        });
+        if (fastestOption) {
+            select.value = fastestOption.value;
+            updateMirrorPath();
+        }
+    })
+    .catch(error => {
+        document.getElementById('mirrorSpinner').style.display = 'none';
+        console.error('Error:', error);
+        $('#err').text("⚠️获取镜像时出错，可能是网络问题：" + error.message);
+    });
 }
 
 function processData(inputValue) {

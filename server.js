@@ -12,6 +12,7 @@ const colors = require('colors-console')
 const winston = require('winston');
 require('winston-daily-rotate-file');
 const net = require('net');
+const ping = require('ping');
 
 app.use(cors());
 app.use(express.json());
@@ -258,13 +259,35 @@ app.get('/get-js', (req, res) => {
     });
 });
 
+app.post('/ping-mirrors', async (req, res) => {
+    const { domains } = req.body;
+    let fastestDomain = null;
+    let minAvgPing = Infinity;
+
+    for (const domain of domains) {
+        try {
+            const result = await ping.promise.probe(domain);
+            if (result.avg && result.avg < minAvgPing) {
+                minAvgPing = result.avg;
+                fastestDomain = domain;
+            }
+        } catch (error) {
+            console.error(`Error pinging ${domain}:`, error);
+        }
+    }
+
+    res.json({ fastestDomain });
+
+    console.log && console.info('Ping mirrors');
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'snibypass.html'));
-    console.log && console.info('snibypass.html loaded');
+    console.log && console.info('html loaded');
 });
 
 app.get('/onlyweb', (req, res) => {
     res.sendFile(path.join(__dirname, 'snibypass-onlyWeb.html'));
-    console.log && console.info('snibypass-onlyWeb.html loaded');
+    console.log && console.info('onlyWeb.html loaded');
 });
