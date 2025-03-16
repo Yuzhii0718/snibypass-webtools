@@ -131,12 +131,12 @@
                 <div id="inputData" class="col-md-6">
                     <div class="d-flex align-items-center">
                         <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
-                            class="btn btn-link">SNI 伪装列表</a>
+                            class="btn btn-link" style="text-decoration: none;">SNI 伪装列表</a>
                         <label for="mirrorSelect" class="mb-0 ms-2">镜像</label>
                         <select id="mirrorSelect" class="form-control ms-2" style="width: auto;"
                             onchange="updateMirrorPath()"></select>
                         <button id="mirrorButton" class="btn btn-success ms-2"
-                            onclick="getFastestMirror()">最快镜像</button>
+                            onclick="getFastestMirror()" title="自动ping最快镜像">ping</button>
                         <div class="spinner-border text-success" role="status" id="mirrorSpinner"
                             style="display: none;">
                             <span class="visually-hidden">Loading...</span>
@@ -150,19 +150,23 @@
 
                 <div id="outputData" class="col-md-6">
                     <div class="d-flex align-items-center">
-                        <p class="ms-2">执行结果</p>
-                        <!-- <div class="ms-2"></div> -->
-                        <div class="form-check ms-4">
+                        <p class="ms-3">执行结果</p>
+                        <div class="form-check ms-2">
                             <input class="form-check-input" type="checkbox" value="" id="sharpProcess">
-                            <label class="form-check-label" for="sharpProcess">
+                            <label class="form-check-label" for="sharpProcess" title="建议勾选">
                                 忽略 “#”
                             </label>
                         </div>
-                        <!-- <div class="ms-2"></div> -->
-                        <div class="form-check ms-4">
+                        <div class="form-check ms-2">
                             <input class="form-check-input" type="checkbox" value="" id="dollorProcess">
-                            <label class="form-check-label" for="dollorProcess">
+                            <label class="form-check-label" for="dollorProcess" title="建议勾选">
                                 忽略 “$”
+                            </label>
+                        </div>
+                        <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" value="" id="caretProcess">
+                            <label class="form-check-label" for="caretProcess" title="建议勾选">
+                                忽略 “^”
                             </label>
                         </div>
                     </div>
@@ -176,18 +180,18 @@
         <div class="container mt-4">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="config">
+                    <div class="rule">
                         <div class="form-group">
-                            <label for="configFiles">伪装列表文件</label>
-                            <select id="configFiles" class="form-control"></select>
+                            <label for="ruleFiles">伪装列表文件</label>
+                            <select id="ruleFiles" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <input id="configFileName" class="form-control" placeholder="默认即使用时间进行命名">
+                            <input id="ruleFileName" class="form-control" placeholder="默认即使用时间进行命名">
                         </div>
                         <br>
-                        <button id="readButton" class="btn btn-primary" onclick="readConfig()">读取数据</button>
-                        <button id="saveButton" class="btn btn-secondary" onclick="saveConfig()">保存数据</button>
-                        <button id="delButton" class="btn btn-danger" onclick="delConfig()">删除数据</button>
+                        <button id="readButton" class="btn btn-primary" onclick="readRule()">读取数据</button>
+                        <button id="saveButton" class="btn btn-secondary" onclick="saveRule()">保存数据</button>
+                        <button id="delButton" class="btn btn-danger" onclick="delRule()">删除数据</button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -222,6 +226,8 @@
             <div class="offcanvas-body">
                 <div>
                     Fake sni to cross greatwall.
+                    <hr>
+                    <p>由于技术实现原理，使用某些安全软件可能导致无法访问证书/SSL错误的网站。</p>
                     <hr>
                     <p>SNI 规则来源：<a href="https://github.com/SpaceTimee/Cealing-Host"
                             target="_blank">Cealing-Host</a><br>Windows

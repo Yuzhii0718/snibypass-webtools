@@ -21,10 +21,11 @@ app.use(bodyParser.json());
 
 // Define path to the static files
 const basePath = './';
-const configDir = path.join(basePath, 'config');
+const ruleDir = path.join(basePath, 'rules');
 const logDir = path.join(basePath, 'logs');
-const commonDir = path.join(basePath, 'common');
-const defaultConfigPath = path.join(commonDir, 'default.json');
+const staticDir = path.join(basePath, 'static');
+const configDir = path.join(basePath, 'config');
+const defaultConfigPath = path.join(configDir, 'default.json');
 
 // log
 if (!fs.existsSync(logDir)) {
@@ -137,79 +138,79 @@ process.on('SIGINT', () => {
 });
 
 // Functions
-app.get('/list-configs', (req, res) => {
-    fs.readdir(configDir, (err, files) => {
+app.get('/list-rules', (req, res) => {
+    fs.readdir(ruleDir, (err, files) => {
         if (err) {
-            console.log && console.error('Can not read config directory: ' + err.message);
-            return res.status(500).send('无法读取配置目录');
+            console.log && console.error('Can not read fake sni directory: ' + err.message);
+            return res.status(500).send('无法读取伪造列表目录');
         }
-        const configFiles = files.filter(file => file.startsWith('config-') && file.endsWith('.json'));
-        if (configFiles.length === 0) {
-            console.log && console.error('No config file found');
-            return res.status(404).send('没有找到配置文件');
+        const ruleFiles = files.filter(file => file.startsWith('sni-') && file.endsWith('.json'));
+        if (ruleFiles.length === 0) {
+            console.log && console.error('No fake sni file found');
+            return res.status(404).send('没有找到伪造列表文件');
         }
-        res.send(configFiles.sort().reverse());
+        res.send(ruleFiles.sort().reverse());
     });
 });
 
-app.post('/read-config', (req, res) => {
-    const { configFile } = req.body;
-    if (!configFile) {
-        console.log && console.error('No config file name provided');
+app.post('/read-rule', (req, res) => {
+    const { ruleFile } = req.body;
+    if (!ruleFile) {
+        console.log && console.error('No fake sni file name provided');
         return res.status(400).send('缺少文件名参数');
     }
-    const filePath = path.join(configDir, configFile);
+    const filePath = path.join(ruleDir, ruleFile);
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
-            console.log && console.error('Can not read config file: ' + err.message);
+            console.log && console.error('Can not read fake sni file: ' + err.message);
             return res.status(500).send('无法读取配置文件');
         }
-        console.log && console.info('Read config file: ' + configFile);
+        console.log && console.info('Read fake sni file: ' + ruleFile);
         res.send(data);
     });
 });
 
-app.post('/save-config', (req, res) => {
+app.post('/save-rule', (req, res) => {
     const content = req.body.content;
-    const configFileName = req.body.configFileName;
+    const ruleFileName = req.body.ruleFileName;
     const date = new Date();
-    const fileName = configFileName ? configFileName : `config-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}-${date.getTime()}.json`;
-    const filePath = path.join(configDir, fileName);
+    const fileName = ruleFileName ? ruleFileName : `sni-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}-${date.getTime()}.json`;
+    const filePath = path.join(ruleDir, fileName);
 
-    if (fileName === 'config-default.json') {
+    if (fileName === 'sni-default.json') {
         return res.status(400).send('"default" 是保留文件名，不能使用');
     }
 
-    fs.mkdir(configDir, { recursive: true }, (err) => {
+    fs.mkdir(ruleDir, { recursive: true }, (err) => {
         if (err) {
-            console.log && console.error('Can not create config directory: ' + err.message);
-            return res.status(500).send('无法创建配置目录');
+            console.log && console.error('Can not create fake sni directory: ' + err.message);
+            return res.status(500).send('无法创建伪造列表目录');
         }
         fs.writeFile(filePath, content, 'utf8', (err) => {
             if (err) {
-                console.log && console.error('Can not save config file: ' + err.message);
-                return res.status(500).send('无法保存配置文件');
+                console.log && console.error('Can not save fake sni file: ' + err.message);
+                return res.status(500).send('无法保存伪造列表文件');
             }
-            console.log && console.info('Config file ' + fileName + ' saved');
-            res.send('配置文件已保存');
+            console.log && console.info('Fake sni file ' + fileName + ' saved');
+            res.send('伪造列表文件已保存');
         });
     });
 });
 
-app.get('/del-config', (req, res) => {
+app.get('/del-rule', (req, res) => {
     const fileName = req.query.fileName;
     if (!fileName) {
-        console.log && console.error('No config file name provided');
+        console.log && console.error('No fake sni file name provided');
         return res.status(400).send('缺少文件名参数');
     }
-    const filePath = path.join(configDir, fileName);
+    const filePath = path.join(ruleDir, fileName);
     fs.unlink(filePath, (err) => {
         if (err) {
-            console.log && console.error('Can not delete config file: ' + err.message);
-            return res.status(500).send('无法删除配置文件');
+            console.log && console.error('Can not delete faek sni file: ' + err.message);
+            return res.status(500).send('无法删除伪造列表文件');
         }
-        console.log && console.info('Delete config file: ' + fileName);
-        res.send('配置文件已删除');
+        console.log && console.info('Delete faek sni file: ' + fileName);
+        res.send('伪造列表文件已删除');
     });
 });
 
@@ -234,7 +235,7 @@ app.get('/stop-browser', (req, res) => {
 });
 
 app.get('/get-default', (req, res) => {
-    const defaultPath = path.join(commonDir, 'default.json');
+    const defaultPath = path.join(configDir, 'default.json');
     fs.readFile(defaultPath, 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading default.json:', err);
@@ -247,7 +248,7 @@ app.get('/get-default', (req, res) => {
 });
 
 app.get('/get-js', (req, res) => {
-    const jsPath = path.resolve(commonDir, 'page.js');
+    const jsPath = path.resolve(staticDir, 'page.js');
     fs.readFile(jsPath, 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading page.js:', err);

@@ -1,5 +1,5 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "date": "2025-3-8",
   "author": "",
   "port": "random",
@@ -14,7 +14,8 @@
   "tips": "",
   "process": {
     "sharpProcess": true,
-    "dollorProcess": true
+    "dollorProcess": true,
+    "caretProcess": true
   },
   "browsers": [
     {
@@ -31,6 +32,11 @@
       "name": "Brave",
       "description": "Brave 浏览器",
       "path": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+    },
+    {
+      "name": "ungoogled-chromium",
+      "description": "ungoogled-chromium",
+      "path": "%LOCALAPPDATA%\\Chromium\\Application\\chrome.exe"
     },
     {
       "name": "自定义",

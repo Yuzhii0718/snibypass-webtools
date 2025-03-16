@@ -62,8 +62,6 @@ function getFastestMirror() {
 
 function processData(inputValue) {
     const cealHostName = "NO";
-    const sharpProcessChecked = $('#sharpProcess').is(':checked');
-    const dollorProcessChecked = $('#dollorProcess').is(':checked');
 
     try {
         CealHostRulesDict[cealHostName] = [];
@@ -79,7 +77,7 @@ function processData(inputValue) {
 
             cealHostRule[0].forEach(cealHostDomain => {
                 const domainString = cealHostDomain.toString().trim();
-                if ((!sharpProcessChecked && domainString.startsWith('#')) || (!dollorProcessChecked && domainString.startsWith('$')) || domainString.startsWith('^')) return;
+                if (domainString.startsWith('^') || domainString.startsWith('#') || domainString.startsWith('$')) return;
 
                 const cealHostDomainPair = domainString.split('^', 2);
                 cealHostDomainPairs.push([cealHostDomainPair[0].trim(), cealHostDomainPair[1]?.trim() || '']);
@@ -139,12 +137,40 @@ function fetchData() {
     console.log("正在获取数据：" + jsonUrl)
 }
 
+function handleSpecialCharacters(inputValue) {
+    const sharpProcessChecked = $('#sharpProcess').is(':checked');
+    const dollorProcessChecked = $('#dollorProcess').is(':checked');
+    const caretProcessChecked = $('#caretProcess').is(':checked');
+
+    const processedData = inputValue;
+
+    if (sharpProcessChecked) {
+        processedData.forEach(cealHostRule => {
+            cealHostRule[0] = cealHostRule[0].map(cealHostDomain => cealHostDomain.toString().replace('#', ''));
+        });
+    }
+    if (dollorProcessChecked) {
+        processedData.forEach(cealHostRule => {
+            cealHostRule[0] = cealHostRule[0].map(cealHostDomain => cealHostDomain.toString().replace('$', ''));
+        });
+    }
+    if (caretProcessChecked) {
+        processedData.forEach(cealHostRule => {
+            cealHostRule[0] = cealHostRule[0].map(cealHostDomain => cealHostDomain.toString().replace('^', ''));
+        });
+    }
+    return processedData;
+}
+
 function processDataFromin() {
     $('#err').empty();
 
     try {
+
         const inputValue = JSON.parse($('#in').val());
-        const processedData = processData(inputValue);
+        const processedInputValue = handleSpecialCharacters(inputValue);
+        const processedData = processData(processedInputValue);
+
         if (processedData) {
             $('#out').val(processedData);
             $('#err').text("🎉处理成功");
@@ -196,8 +222,8 @@ function openBrowser() {
         });
 }
 
-function fetchConfigFiles() {
-    fetch('/list-configs', {
+function fetchRuleFiles() {
+    fetch('/list-rules', {
         method: 'GET'
     })
         .then(async response => {
@@ -208,7 +234,7 @@ function fetchConfigFiles() {
             return response.json();
         })
         .then(files => {
-            const select = $('#configFiles')[0];
+            const select = $('#ruleFiles')[0];
             files.forEach(file => {
                 const option = $('<option></option>')[0];
                 option.value = file;
@@ -222,21 +248,21 @@ function fetchConfigFiles() {
         });
 }
 
-function clearConfigFiles() {
-    const select = document.getElementById('configFiles');
+function clearRuleFiles() {
+    const select = document.getElementById('ruleFiles');
     while (select.firstChild) {
         select.removeChild(select.firstChild);
     }
 }
 
-function readConfig(fileName) {
-    const configFile = $('#configFiles').val();
-    fetch(`/read-config`, {
+function readRule(fileName) {
+    const ruleFile = $('#ruleFiles').val();
+    fetch(`/read-rule`, {
         method: 'post',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ configFile: configFile })
+        body: JSON.stringify({ ruleFile: ruleFile })
     })
         .then(async response => {
             if (!response.ok) {
@@ -255,23 +281,23 @@ function readConfig(fileName) {
         });
 }
 
-function saveConfig() {
+function saveRule() {
     const content = $('#in').val();
-    let configFileName = $('#configFileName').val();
-    if (configFileName) {
-        if (!configFileName.endsWith('.json')) {
-            configFileName += '.json';
+    let ruleFileName = $('#ruleFileName').val();
+    if (ruleFileName) {
+        if (!ruleFileName.endsWith('.json')) {
+            ruleFileName += '.json';
         }
-        if (!configFileName.startsWith('config-')) {
-            configFileName = 'config-' + configFileName;
+        if (!ruleFileName.startsWith('sni-')) {
+            ruleFileName = 'sni-' + ruleFileName;
         }
     }
-    fetch('/save-config', {
+    fetch('/save-rule', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ content: content, configFileName: configFileName })
+        body: JSON.stringify({ content: content, ruleFileName: ruleFileName })
     })
         .then(async response => {
             if (!response.ok) {
@@ -282,9 +308,9 @@ function saveConfig() {
         })
         .then(response => {
             //先清空列表
-            clearConfigFiles();
+            clearRuleFiles();
             //再获取列表
-            fetchConfigFiles();
+            fetchRuleFiles();
             $('#err').text("🎉保存成功");
         })
         .catch(error => {
@@ -293,15 +319,15 @@ function saveConfig() {
         });
 }
 
-function delConfig() {
+function delRule() {
     const userConfirmed = confirm("确定要删除配置吗？");
     if (userConfirmed) {
         // 执行删除操作
-        const select = $('#configFiles')[0];
+        const select = $('#ruleFiles')[0];
         const selectedOption = select.options[select.selectedIndex];
         if (selectedOption) {
-            const fileName = $('#configFiles').val();
-            fetch(`/del-config?fileName=${encodeURIComponent(fileName)}`, {
+            const fileName = $('#ruleFiles').val();
+            fetch(`/del-rule?fileName=${encodeURIComponent(fileName)}`, {
                 method: 'GET'
             })
                 .then(async response => {
@@ -313,8 +339,8 @@ function delConfig() {
                 })
                 .then(response => {
                     $('#err').text("配置已删除");
-                    clearConfigFiles(); // 清空列表
-                    fetchConfigFiles(); // 重新获取列表
+                    clearRuleFiles(); // 清空列表
+                    fetchRuleFiles(); // 重新获取列表
                 })
                 .catch(error => {
                     alert(error.message);
@@ -389,10 +415,12 @@ function updateInputPath() {
 function updateProcessOptions() {
     const sharpProcessChecked = $('#sharpProcess').is(':checked');
     const dollorProcessChecked = $('#dollorProcess').is(':checked');
+    const caretProcessChecked = $('#caretProcess').is(':checked');
 
     const processOptions = {
         sharpProcess: sharpProcessChecked,
-        dollorProcess: dollorProcessChecked
+        dollorProcess: dollorProcessChecked,
+        caretProcess: caretProcessChecked
     };
 
     console.log("Process options updated:", processOptions);
@@ -432,12 +460,15 @@ async function getDefault() {
 
         $('#sharpProcess').change(updateProcessOptions);
         $('#dollorProcess').change(updateProcessOptions);
-        
+        $('#caretProcess').change(updateProcessOptions);
+
         const sharpProcess = data.process.sharpProcess;
         const dollorProcess = data.process.dollorProcess;
+        const caretProcess = data.process.caretProcess;
         $('#sharpProcess').prop('checked', sharpProcess);
         $('#dollorProcess').prop('checked', dollorProcess);
-        
+        $('#caretProcess').prop('checked', caretProcess);
+
         // 确保在设置 checked 属性之后调用 updateProcessOptions
         updateProcessOptions();
 
@@ -513,8 +544,10 @@ async function getDefault() {
         });
 
         // 初始化
-        fetchConfigFiles();
+        fetchRuleFiles();
         updateInputPath();
+
+        $('#err').text("🎉欢迎使用！");
     } catch (error) {
         console.error('Error fetching data:', error);
     }

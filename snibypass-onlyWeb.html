@@ -118,14 +118,30 @@
             background-color: #dc3545;
         }
 
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin: 0 10px 0 0;
+            padding: 0;
+        }
+
+        .checkbox-container label {
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             html.bg {
                 background: #EFEFEF
             }
         }
+
         @media (min-width: 768px) {
             #userAgreementModal .modal-content {
-            width: 25%;
+                width: 25%;
             }
         }
     </style>
@@ -150,6 +166,11 @@
         <h1>Chromium 浏览器伪造 SNI 工具网页版(onlyWeb)</h1>
         <hr />
         <span style="color: #007bff;">输出信息: </span><a id="err">暂无</a>
+        <hr />
+        <p class="checkbox-container">
+            <input type="checkbox" id="ignoreCheck" checked>
+            <label for="ignoreCheck">忽略`#、$、^`的特殊处理</label>
+        </p>
         <hr />
         <div class="container">
             <div id="inputData">
@@ -235,6 +256,8 @@
                 $('#err').text("执行结果已复制到剪贴板");
             }
 
+            const ignoreCheck = document.getElementById('ignoreCheck');
+
             const CealHostRulesDict = {};
             const jsonUrl = 'https://ghproxy.net/https://raw.githubusercontent.com/SpaceTimee/Cealing-Host/refs/heads/main/Cealing-Host.json';
             function processData(inputValue) {
@@ -309,10 +332,43 @@
                     });
             }
 
+            function handleSpecialCharacters(ignoreSpecial) {
+                const inValue = document.getElementById('in').value;
+                const outValue = document.getElementById('out').value;
+
+                // 处理特殊字符 ^ # $
+                if (ignoreSpecial) {
+                    try {
+                        const inputData = JSON.parse(inValue);
+                        // 处理每个规则
+                        for (let i = 0; i < inputData.length; i++) {
+                            const domains = inputData[i][0];
+                            // 处理域名数组
+                            for (let j = 0; j < domains.length; j++) {
+                                // 移除特殊字符
+                                domains[j] = domains[j].replace(/[\^#$]/g, '');
+                            }
+                        }
+                        // 更新输入框的值
+                        $('#in').val(JSON.stringify(inputData));
+                        $('#err').text("特殊字符已被移除");
+                    } catch (error) {
+                        console.error("处理特殊字符时出错：", error);
+                        $('#err').text("处理特殊字符失败：" + error.message);
+                    }
+                }
+            }
+
             function processDataFromin() {
                 $('#err').empty();
 
                 try {
+                    // 获取是否忽略特殊字符的选项
+                    const ignoreSpecial = $('#ignoreCheck').prop('checked');
+                    // 处理特殊字符
+                    handleSpecialCharacters(ignoreSpecial);
+
+                    // 处理数据
                     const inputValue = JSON.parse($('#in').val());
                     const processedData = processData(inputValue);
                     if (processedData) {
