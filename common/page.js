@@ -37,31 +37,33 @@ function getFastestMirror() {
         },
         body: JSON.stringify({ domains })
     })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('mirrorSpinner').style.display = 'none';
-        const fastestDomain = data.fastestDomain;
-        const fastestOption = options.find(option => {
-            try {
-                return new URL(option.value).hostname === fastestDomain;
-            } catch (e) {
-                return false;
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('mirrorSpinner').style.display = 'none';
+            const fastestDomain = data.fastestDomain;
+            const fastestOption = options.find(option => {
+                try {
+                    return new URL(option.value).hostname === fastestDomain;
+                } catch (e) {
+                    return false;
+                }
+            });
+            if (fastestOption) {
+                select.value = fastestOption.value;
+                updateMirrorPath();
             }
+        })
+        .catch(error => {
+            document.getElementById('mirrorSpinner').style.display = 'none';
+            console.error('Error:', error);
+            $('#err').text("⚠️获取镜像时出错，可能是网络问题：" + error.message);
         });
-        if (fastestOption) {
-            select.value = fastestOption.value;
-            updateMirrorPath();
-        }
-    })
-    .catch(error => {
-        document.getElementById('mirrorSpinner').style.display = 'none';
-        console.error('Error:', error);
-        $('#err').text("⚠️获取镜像时出错，可能是网络问题：" + error.message);
-    });
 }
 
 function processData(inputValue) {
     const cealHostName = "NO";
+    const sharpProcessChecked = $('#sharpProcess').is(':checked');
+    const dollorProcessChecked = $('#dollorProcess').is(':checked');
 
     try {
         CealHostRulesDict[cealHostName] = [];
@@ -77,7 +79,7 @@ function processData(inputValue) {
 
             cealHostRule[0].forEach(cealHostDomain => {
                 const domainString = cealHostDomain.toString().trim();
-                if (domainString.startsWith('^') || domainString.startsWith('#') || domainString.startsWith('$')) return;
+                if ((!sharpProcessChecked && domainString.startsWith('#')) || (!dollorProcessChecked && domainString.startsWith('$')) || domainString.startsWith('^')) return;
 
                 const cealHostDomainPair = domainString.split('^', 2);
                 cealHostDomainPairs.push([cealHostDomainPair[0].trim(), cealHostDomainPair[1]?.trim() || '']);
@@ -384,6 +386,20 @@ function updateInputPath() {
     }
 }
 
+function updateProcessOptions() {
+    const sharpProcessChecked = $('#sharpProcess').is(':checked');
+    const dollorProcessChecked = $('#dollorProcess').is(':checked');
+
+    const processOptions = {
+        sharpProcess: sharpProcessChecked,
+        dollorProcess: dollorProcessChecked
+    };
+
+    console.log("Process options updated:", processOptions);
+    // 更新处理后的数据
+    processDataFromin();
+}
+
 async function getDefault() {
     try {
         const response = await fetch('/get-default');
@@ -403,6 +419,8 @@ async function getDefault() {
         if (isDark) {
             toggleNightMode();
         }
+        console.log("isDark: " + isDark);
+
         const showLisence = data.showLisence;
         if (showLisence) {
             showUserLisence();
@@ -412,6 +430,17 @@ async function getDefault() {
             showUserAgreement();
         }
 
+        $('#sharpProcess').change(updateProcessOptions);
+        $('#dollorProcess').change(updateProcessOptions);
+        
+        const sharpProcess = data.process.sharpProcess;
+        const dollorProcess = data.process.dollorProcess;
+        $('#sharpProcess').prop('checked', sharpProcess);
+        $('#dollorProcess').prop('checked', dollorProcess);
+        
+        // 确保在设置 checked 属性之后调用 updateProcessOptions
+        updateProcessOptions();
+
         // 传入信息
         const agreementText = data.agreementText;
         writeToUserAgreement(agreementText);
@@ -419,6 +448,7 @@ async function getDefault() {
         const version = data.version;
         if (version) {
             $('#version').text(version).show();
+            console.log("Version: " + version);
         } else {
             $('#ver-span').hide();
         }

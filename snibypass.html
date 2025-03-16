@@ -131,7 +131,7 @@
                 <div id="inputData" class="col-md-6">
                     <div class="d-flex align-items-center">
                         <a href="https://github.com/SpaceTimee/Cealing-Host/releases" target="_blank"
-                            class="btn btn-link">SNI 伪装列表：</a>
+                            class="btn btn-link">SNI 伪装列表</a>
                         <label for="mirrorSelect" class="mb-0 ms-2">镜像</label>
                         <select id="mirrorSelect" class="form-control ms-2" style="width: auto;"
                             onchange="updateMirrorPath()"></select>
@@ -149,7 +149,23 @@
                 </div>
 
                 <div id="outputData" class="col-md-6">
-                    <p>执行结果：</p>
+                    <div class="d-flex align-items-center">
+                        <p class="ms-2">执行结果</p>
+                        <!-- <div class="ms-2"></div> -->
+                        <div class="form-check ms-4">
+                            <input class="form-check-input" type="checkbox" value="" id="sharpProcess">
+                            <label class="form-check-label" for="sharpProcess">
+                                忽略 “#”
+                            </label>
+                        </div>
+                        <!-- <div class="ms-2"></div> -->
+                        <div class="form-check ms-4">
+                            <input class="form-check-input" type="checkbox" value="" id="dollorProcess">
+                            <label class="form-check-label" for="dollorProcess">
+                                忽略 “$”
+                            </label>
+                        </div>
+                    </div>
                     <textarea id="out" class="form-control" rows="6" readonly placeholder="点击处理数据查看处理结果"></textarea>
                     <button id="processButton" class="btn btn-primary mt-2" onclick="processDataFromin()">处理列表</button>
                     <button class="btn btn-secondary mt-2" onclick="copyResult()">复制结果</button>

@@ -12,6 +12,10 @@
   "defaultData": "[[[\"*google*\",\"*youtube.com\"],\"g.cn\",\"185.24.219.130\"],[[\"*github.com\"],\"\",\"20.200.245.247\"],[[\"*githubusercontent.com\"],\"\",\"185.199.108.133\"]]",
   "agreementText": "本工具仅供仅供抵御网络非法监听和开展网络安全研究使用；\n请遵守本地法律法规要求，不得用于非法用途，否则后果自负。",
   "tips": "",
+  "process": {
+    "sharpProcess": true,
+    "dollorProcess": true
+  },
   "browsers": [
     {
       "name": "Chrome",
